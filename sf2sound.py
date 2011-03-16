@@ -68,6 +68,9 @@ fundamentalFrequency = middleCFreq32
 # frequency?
 # phrase ending: boolean
 
+
+notesEmitted = 0
+
 # These are initialized later:
 durationOfSymbol = { }
 durationSymbols = [ ]
@@ -283,7 +286,6 @@ def setFrequencyDictionary(baseFrequency):
     noteFreq["x"] = 0.0
 
 def freq(token, nSemitoneShifts):
-  print "freq:", token, nSemitoneShifts
   factor = pow(semitoneFactor, nSemitoneShifts);
   if token in note:
     return noteFreq[token]*factor
@@ -351,14 +353,20 @@ def setDurationSymbols():
 # define the SF Machine
 
 def emitQuadruple(parseData):
+    global notesEmitted
     root, suffix, result = parseData
-    print "suffix:", suffix
     if suffix.find("_") > -1:
       nSemitones = -12
     elif suffix.find("^") > -1:
       nSemitones = 12
+    if suffix.find("-") > -1:
+      nSemitones = -1
+    elif suffix.find("+") > -1:
+      nSemitones = 1    
     else: 
       nSemitones = 0
+    notesEmitted = notesEmitted + 1
+    print notesEmitted,
     return catList([ `freq(root, nSemitones)`, `duration`, `decay`, `amplitude`])+"\n"
   
 def executeOp(x):
