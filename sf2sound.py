@@ -39,12 +39,26 @@ OFF = 0
 CLEANUP = OFF
 
 # AMPLITUDES:
-FORTE = 1.0
-PIANO = 0.5
+FORTISSIMO = 1.0
+FORTE = 0.85
+MEZZOFORTE = 0.6
+MEZZOPIANO = 0.45
+PIANO = 0.3
+PIANISSIMO = 0.15
 
 # DECAY
 LEGATO = 1.0
 STACCATO = 0.5
+
+# TEMPI
+LARGO = 48
+LARGHETTO = 60
+ADAGIO = 72
+ANDANTE = 92
+MODERATO = 114
+ALLEGRO = 138
+PRESTO = 180
+PRESTISSIMO = 208
 
 #######################################################
 # @Registers for SF Machine: define
@@ -368,39 +382,72 @@ def emitQuadruple(parseData):
     notesEmitted = notesEmitted + 1
     print notesEmitted,
     return catList([ `freq(root, nSemitones)`, `duration`, `decay`, `amplitude`])+"\n"
+
+  
+def setTempo(t):
+  global tempo, beatDuration
+  tempo = t
+  beatDuration = 60.0/tempo
+  print "beat duration:", beatDuration, "seconds"
+  setDurationSymbols()
   
 def executeOp(x):
   global duration, beatDuration, amplitude, decay
   # rhythm symbol
   if x in durationSymbols:
     duration = durationOfSymbol[x]
+    
   # pitch
   elif x.find("fundamental:") == 0:
     op, operand = x.split(":")
     setFrequencyDictionary(float(operand))
+    
   # time 
   elif x.find("tempo:") == 0:
     op, operand = x.split(":")
-    tempo = float(operand);
-    beatDuration = 60.0/tempo
-    print "beat duration:", beatDuration, "seconds"
-    setDurationSymbols()
+    setTempo(float(operand))
+  elif x.find("largo:") == 0:
+    setTempo(LARGO)
+  elif x.find("larghetto:") == 0:
+    setTempo(LARGHETTO)
+  elif x.find("adagio:") == 0:
+    setTempo(ADAGIO)
+  elif x.find("andante:") == 0:
+    setTempo(ANDANTE)
+  elif x.find("moderato:") == 0:
+    setTempo(MODERATO)
+  elif x.find("allegro:") == 0:
+    setTempo(ALLEGRO)
+  elif x.find("presto:") == 0:
+    setTempo(PRESTO)
+  elif x.find("prestissimo:") == 0:
+    setTempo(PRESTISSIMO)
+
   # amplitude  
   elif x.find("amplitude:") == 0:
     op, operand = x.split(":")
     amplitude = float(operand)
-  elif x.find("leg:") == 0:
-    decay = LEGATO
-  elif x.find("stacc:") == 0:
-    decay = STACCATO
-  elif x.find("f:") == 0:
+  elif x.find("fortissimo:") == 0 or x.find("ff:") == 0:
+    amplitude = FORTISSIMO
+  elif x.find("forte:") == 0  or x.find("f:") == 0:
     amplitude = FORTE
-  elif x.find("p:") == 0:
+  elif x.find("mezzoforte:") == 0  or x.find("mf:") == 0:
+    amplitude = MEZZOFORTE
+  elif x.find("mezzopiano:") == 0  or x.find("mp:") == 0:
+    amplitude = MEZZOPIANO
+  elif x.find("piano:")  == 0 or x.find("p:") == 0:
     amplitude = PIANO
+  elif x.find("pianissimo:") == 0  or x.find("pp:") == 0:
+    amplitude = PIANISSIMO
+   
   # articulation
   elif x.find("decay:") == 0:
     op, operand = x.split(":")
     decay = float(operand)
+  elif x.find("legato:") == 0 or x.find("leg:") == 0:
+    decay = LEGATO
+  elif x.find("staccato:") == 0 or x.find("stacc:") == 0:
+    decay = STACCATO
   else:
     # print "Unrecognized opcode:", x
     pass
