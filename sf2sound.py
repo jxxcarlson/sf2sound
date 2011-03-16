@@ -351,20 +351,24 @@ def emitQuadruple(parseData):
   
 def executeOp(x):
   global duration, beatDuration, amplitude, decay
+  # rhythm symbol
   if x in durationSymbols:
-   duration = durationOfSymbol[x]
+    duration = durationOfSymbol[x]
+  # pitch
+  elif x.find("fundamental:") == 0:
+    op, operand = x.split(":")
+    setFrequencyDictionary(float(operand))
+  # time 
   elif x.find("tempo:") == 0:
     op, operand = x.split(":")
     tempo = float(operand);
     beatDuration = 60.0/tempo
     print "beat duration:", beatDuration, "seconds"
     setDurationSymbols()
+  # amplitude  
   elif x.find("amplitude:") == 0:
     op, operand = x.split(":")
     amplitude = float(operand)
-  elif x.find("decay:") == 0:
-    op, operand = x.split(":")
-    decay = float(operand)
   elif x.find("leg:") == 0:
     decay = LEGATO
   elif x.find("stacc:") == 0:
@@ -373,6 +377,10 @@ def executeOp(x):
     amplitude = FORTE
   elif x.find("p:") == 0:
     amplitude = PIANO
+  # articulation
+  elif x.find("decay:") == 0:
+    op, operand = x.split(":")
+    decay = float(operand)
   else:
     # print "Unrecognized opcode:", x
     pass
@@ -406,11 +414,11 @@ def samp2wav(inputFile, outputFile):
   
   # run the command 
   #
-  #    text2sf <inputfile> <outputfile> 44000 1 1.0
+  #    text2sf <inputfile> <outputfile> 44100 1 1.0
   #
   # to generate a .wav from a .samp fiie
 
-  cmd = cmd = catList([TEXT2SF, inputFile, outputFile, "44000", "1", "1.0"])
+  cmd = cmd = catList([TEXT2SF, inputFile, outputFile, "44100", "1", "1.0"])
   os.system(cmd)
 
 ##############################################################################
