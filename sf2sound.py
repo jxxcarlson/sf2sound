@@ -46,10 +46,16 @@ PIANO = 0.5
 LEGATO = 1.0
 STACCATO = 0.5
 
-##############################
-# Machine state variables: define
+#######################################################
+# @Registers for SF Machine: define
 # and set defaults
-#############################
+#######################################################
+
+semitoneFactor = exp(log(2)/12.0)
+middleCFreq = 261.62556530059868
+middleCFreq32 = middleCFreq/8
+
+# SF REGISTERS:
 
 beat = "q" # values: h (half), q (quarter), e (eighth)
 tempo = 72  
@@ -58,16 +64,13 @@ beatDuration = 60.0/tempo
 duration = beat 
 decay = 0.5
 amplitude = 1.0
+fundamentalFrequency = middleCFreq32
 # frequency?
 # phrase ending: boolean
 
 # These are initialized later:
 durationOfSymbol = { }
 durationSymbols = [ ]
-
-semitoneFactor = exp(log(2)/12.0)
-middleCFreq = 261.62556530059868
-middleCFreq = middleCFreq/8
 
 note = [ ]  # to be set later by setNote
 alternateNoteDict = { }
@@ -271,9 +274,9 @@ print
 prettyPrintDictionary(alternateNoteDict)
 """
 
-def setFrequencyDictionary(fundamentalFrequency):
+def setFrequencyDictionary(baseFrequency):
   global noteFreq 
-  freq = fundamentalFrequency
+  freq = baseFrequency
   for j in range(0, len(note)):
     noteFreq[note[j]] = freq
     freq = semitoneFactor*freq
@@ -456,7 +459,7 @@ setAlternateNoteDict()
 
 setNote()
 
-setFrequencyDictionary(middleCFreq)
+setFrequencyDictionary(fundamentalFrequency)
 
 setDurationSymbols()
 
