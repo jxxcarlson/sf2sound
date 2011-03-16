@@ -77,7 +77,7 @@ alternateNoteDict = { }
 alternateNotes = [ ]
 
 # Note accents
-accents = ['+', '-', ',', '.']
+accents = ['+', '-', ',', '.', '_', '^']
 
 # Dictionary of note frequenceies:
 noteFreq = {} # Empty dictionary
@@ -282,12 +282,14 @@ def setFrequencyDictionary(baseFrequency):
     freq = semitoneFactor*freq
     noteFreq["x"] = 0.0
 
-def freq(token):
+def freq(token, nSemitoneShifts):
+  print "freq:", token, nSemitoneShifts
+  factor = pow(semitoneFactor, nSemitoneShifts);
   if token in note:
-    return noteFreq[token]
+    return noteFreq[token]*factor
   elif token in alternateNotes:
     k = alternateNoteDict[token]
-    return noteFreq[k]
+    return noteFreq[k]*factor
   else:
     return 0
 
@@ -350,7 +352,14 @@ def setDurationSymbols():
 
 def emitQuadruple(parseData):
     root, suffix, result = parseData
-    return catList([ `freq(root)`, `duration`, `decay`, `amplitude`])+"\n"
+    print "suffix:", suffix
+    if suffix.find("_") > -1:
+      nSemitones = -12
+    elif suffix.find("^") > -1:
+      nSemitones = 12
+    else: 
+      nSemitones = 0
+    return catList([ `freq(root, nSemitones)`, `duration`, `decay`, `amplitude`])+"\n"
   
 def executeOp(x):
   global duration, beatDuration, amplitude, decay
