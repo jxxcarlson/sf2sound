@@ -57,7 +57,7 @@
   (Mac: ) This command brings up the QuickTime player loaded with foo.wav.
   Click the pla button to listen to foo.wav.
 
- NOTE:  Since I am lazy, Iusually package all of the above as follows:
+ NOTE:  Since I am lazy, I usually package all of the above as follows:
 
  a.  Create a file m.sh with contents
 
@@ -98,61 +98,85 @@ void stripnl(char *str) {
 #define M_PI (3.141592654)
 #endif
 
+#define SRATE 44100
 
-void writeTone(float freq, float dur, float slope, float amplitude, float srate, FILE *fp)
-{
-	int i,sr,nsamps;
+int main(int argc, char **argv) {
+
+    FILE *infile, *outfile;
+    char line[100];
+    char *tok;
+    float freq, dur, decay, amplitude;
+
+    int srate = SRATE;
+  
+	int sr, nsamps, phase;
 	double samp,k,a,x;
 	double twopi = 2.0 * M_PI;
 	double angleincr;
 	double maxsamp = 0.0;
 
-	nsamps = (int)(dur * srate);
-	angleincr = twopi * freq / srate;
-	k = dur/nsamps;
-	a = exp(-k/slope);
-	x = 1.0;
-	
-	for(i=0;i < nsamps; i++){
-     		samp = amplitude*sin(angleincr*i);
-               /* apply exp decay */
-		x *= a;
-		samp *= x;       
-		fprintf(fp,"%.8lf\n",samp);		
-	}
-}
 
-
-int main(int argc, char **argv) {
-
-  FILE *infile, *outfile;
-  char line[100];
-  char *tok;
-  float freq, dur, decay, amplitude;
-
-  /* Open infile.  If NULL is returned there was an error */
+     // Open infile.  If NULL is returned there was an error
     if((infile = fopen(argv[1], "r")) == NULL) {
       printf("Error Opening Input Fle.\n");
       exit(1);
     } 
 
-  /* Open outfile.  If NULL is returned there was an error */
+    // Open outfile.  If NULL is returned there was an error 
     if((outfile = fopen(argv[2], "w")) == NULL) {
       printf("Error Opening Output File.\n");
       exit(1);
     } 
   
-  while( fgets(line, sizeof(line), infile) != NULL ) {
-    /* Get each line from the infile */
-    tok = strtok(line, " ");
+   float ATTACK = atof(argv[3]);
+   float RELEASE = atof(argv[4]);
+  
+   phase = 0;
+   while( fgets(line, sizeof(line), infile) != NULL ) {
+     // Get each line from the infile 
+     tok = strtok(line, " ");
     
-    freq = atof(tok);
-    tok = strtok(NULL, " "); dur = atof(tok);
-    tok = strtok(NULL, " "); decay = atof(tok);
-    tok = strtok(NULL, " "); amplitude = atof(tok);
-    writeTone(freq, dur, decay, amplitude, 44000.0, outfile);
+     /*                    */ freq = atof(tok);
+     tok = strtok(NULL, " "); dur = atof(tok);
+     tok = strtok(NULL, " "); decay = atof(tok);
+     tok = strtok(NULL, " "); amplitude = atof(tok);
+     
+     nsamps = (int)(dur * srate);
+	 angleincr = twopi * freq / srate;
+	 k = dur/nsamps;
+	 a = exp(-k/decay);
+	 x = 1.0;
+	 
+	 int i; // i is the local phase
+	 float endAttack = ATTACK*nsamps;
+	 float releaseSamples = RELEASE*nsamps;
+	 float beginRelease = nsamps - releaseSamples;
+	 
+	 for( i = 0; i < nsamps; i++ ){
+	    phase++;
+	    float A, attackAmplitude, releaseAmplitude;
+	    
+	    if ( i < endAttack ) {
+	       attackAmplitude = pow(i/endAttack, 2);
+	     } else {
+	       attackAmplitude = 1.0;
+	    }
+	    
+	    if ( i > beginRelease ) {
+	       float j = (nsamps - i)/(nsamps - beginRelease);
+	       releaseAmplitude = pow(j, 2);
+	     } else {
+	       releaseAmplitude = 1.0;
+	    }
+	    
+	    A = attackAmplitude*releaseAmplitude*amplitude;
+	    
+     	samp = A*sin(angleincr*phase);
+		x *= a;
+		samp *= x;       
+		fprintf(outfile,"%.8lf\n",samp);		
+	 }
   }
- 
   // Close the files
   fclose(infile); 
   fclose(outfile);

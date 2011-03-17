@@ -15,13 +15,13 @@
 # Date:  March 14, 2011
 
 # INSTALLATION: 
-# Be sure to set the variables TEXT2SF and QUAD2TEXT to the correct paths
-# for the C programs text2sf and quad2text.  
+# Be sure to set the variables TEXT2SF and QUAD2SAMP to the correct paths
+# for the C programs text2sf and quad2samp.  
 # 
 # The program text2sf can be obtained from 
 # the CD accompanying "The Audio Programming Book," edited by 
-# Richard Boulanger and Victor Lazzarini.  The program quad2text can be 
-# obtained on this site.  Compile using "gcc quad2text.c -o quad2text"
+# Richard Boulanger and Victor Lazzarini.  The program quad2samp can be 
+# obtained on this site.  Compile using "gcc quad2samp.c -o quad2samp"
 
 ##################################################################
 #                        @Variables
@@ -30,9 +30,12 @@
 import os, sys, string
 from math import *
 
-# Location of text2sf and quad2text in system:
+# Location of text2sf and quad2samp in system:
 TEXT2SF = "~/Dropbox/bin/text2sf"
-QUAD2TEXT = "~/Dropbox/bin/quad2text"
+QUAD2SAMP = "~/Dropbox/bin/quad2samp"
+
+# recording level 1.0 creates obnoxious distortion
+RECORDING_LEVEL = "0.5" 
 
 ON = 1
 OFF = 0
@@ -46,7 +49,7 @@ MEZZOPIANO = 0.45
 PIANO = 0.3
 PIANISSIMO = 0.15
 
-# DECAY
+# ARTICULATION
 LEGATO = 1.0
 STACCATO = 0.5
 
@@ -79,6 +82,10 @@ duration = beat
 decay = 0.5
 amplitude = 1.0
 fundamentalFrequency = middleCFreq32
+
+attack = 0.01
+release = 0.02
+
 # frequency?
 # phrase ending: boolean
 
@@ -367,21 +374,39 @@ def setDurationSymbols():
 # define the SF Machine
 
 def emitQuadruple(parseData):
-    global notesEmitted
-    root, suffix, result = parseData
-    if suffix.find("_") > -1:
-      nSemitones = -12
-    elif suffix.find("^") > -1:
-      nSemitones = 12
-    if suffix.find("-") > -1:
-      nSemitones = -1
-    elif suffix.find("+") > -1:
-      nSemitones = 1    
-    else: 
-      nSemitones = 0
-    notesEmitted = notesEmitted + 1
-    print notesEmitted,
+  global notesEmitted
+  root, suffix, result = parseData
+    
+  # octave transposition
+  if suffix.find("_") > -1:
+    nSemitones = -12
+  elif suffix.find("^") > -1:
+    nSemitones = 12
+      
+  # transposition by n semitones
+  if suffix.find("-") > -1:
+    nSemitones = -1
+  elif suffix.find("+") > -1:
+    nSemitones = 1    
+  else: 
+    nSemitones = 0
+      
+  # phrase endings
+  if suffix.find(",") == -1:
     return catList([ `freq(root, nSemitones)`, `duration`, `decay`, `amplitude`])+"\n"
+  else: # return a shortened note followe by a compensating rest
+    duration1 = 0.7*duration
+    duration2 = duration - duration1
+    Q1 = catList([ `freq(root, nSemitones)`, `duration1`, `decay`, `amplitude`])+"\n"
+    Q2 = catList([ "0.0", `duration2`, `decay`, `amplitude`])+"\n"
+    return Q1 + Q2
+  
+  notesEmitted = notesEmitted + 1
+  print notesEmitted, root+suffix, "  ",
+  if notesEmitted % 8 == 0:
+    print 
+    return catList([ `freq(root, nSemitones)`, `duration`, `decay`, `amplitude`])+"\n"
+
 
   
 def setTempo(t):
@@ -390,9 +415,11 @@ def setTempo(t):
   beatDuration = 60.0/tempo
   print "beat duration:", beatDuration, "seconds"
   setDurationSymbols()
+  print "tempo:", tempo
   
 def executeOp(x):
   global duration, beatDuration, amplitude, decay
+  global attack, release
   # rhythm symbol
   if x in durationSymbols:
     duration = durationOfSymbol[x]
@@ -448,6 +475,16 @@ def executeOp(x):
     decay = LEGATO
   elif x.find("staccato:") == 0 or x.find("stacc:") == 0:
     decay = STACCATO
+
+  elif x.find("attack:") == 0:
+    op, operand = x.split(":")
+    print "op, operand:", op, operand
+    attack = float(operand)
+  elif x.find("release:") == 0:
+    op, operand = x.split(":")
+    release = float(operand)
+    print "op, operand:", op, operand
+    
   else:
     # print "Unrecognized opcode:", x
     pass
@@ -466,7 +503,7 @@ def solfa2quad( solfaList ):
 
 def quad2samp (inputFile, outputFile):
 
-  global QUAD2TEXT
+  global QUAD2SAMP
   # run the command 
   #
   #    quad <inputFile> <outputFile>
@@ -474,7 +511,8 @@ def quad2samp (inputFile, outputFile):
   # to create a wave sample file from
   # a *.quad file
 
-  cmd = catList([QUAD2TEXT, inputFile, outputFile])
+  print "attack:", attack, "release:", release
+  cmd = catList([QUAD2SAMP, inputFile, outputFile, `attack`, `release`])
   os.system(cmd)
 
 def samp2wav(inputFile, outputFile):
@@ -485,7 +523,7 @@ def samp2wav(inputFile, outputFile):
   #
   # to generate a .wav from a .samp fiie
 
-  cmd = cmd = catList([TEXT2SF, inputFile, outputFile, "44100", "1", "1.0"])
+  cmd = cmd = catList([TEXT2SF, inputFile, outputFile, "44100", "1", RECORDING_LEVEL])
   os.system(cmd)
 
 ##############################################################################
