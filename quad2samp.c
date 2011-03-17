@@ -148,8 +148,8 @@ int main(int argc, char **argv) {
      nsamps = (int)(dur * srate);
 	 angleincr = twopi * freq / srate;
 	 k = dur/nsamps;
-	 dampingFactor = exp(-k/decay);
-	 dampingAmplitude = 1.0;
+	 float dampingFactor = exp(-k/decay);
+	 float dampingAmplitude = 1.0;
 	 
 	 int i; // local phase - use for a single tuple
 	 

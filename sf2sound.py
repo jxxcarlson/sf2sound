@@ -39,7 +39,9 @@ RECORDING_LEVEL = "0.5"
 
 ON = 1
 OFF = 0
+
 CLEANUP = OFF
+DEBUG = OFF
 
 # AMPLITUDES:
 FORTISSIMO = 1.0
@@ -110,6 +112,10 @@ noteFreq = {} # Empty dictionary
 #                    @Helpers
 #####################################################
 
+def debug(x):
+  if (DEBUG == ON):
+    print x,
+  
 def file2string(f):
   cwd = os.getcwd()
   F = cwd+"/"+f
@@ -378,18 +384,17 @@ def emitQuadruple(parseData):
   root, suffix, result = parseData
     
   # octave transposition
+  nSemitones = 0
   if suffix.find("_") > -1:
     nSemitones = -12
-  elif suffix.find("^") > -1:
+  if suffix.find("^") > -1:
     nSemitones = 12
       
   # transposition by n semitones
   if suffix.find("-") > -1:
     nSemitones = -1
-  elif suffix.find("+") > -1:
-    nSemitones = 1    
-  else: 
-    nSemitones = 0
+  if suffix.find("+") > -1:
+    nSemitones = 1 
       
   # phrase endings
   if suffix.find(",") == -1:
@@ -478,12 +483,10 @@ def executeOp(x):
 
   elif x.find("attack:") == 0:
     op, operand = x.split(":")
-    print "op, operand:", op, operand
     attack = float(operand)
   elif x.find("release:") == 0:
     op, operand = x.split(":")
     release = float(operand)
-    print "op, operand:", op, operand
     
   else:
     # print "Unrecognized opcode:", x
@@ -491,12 +494,17 @@ def executeOp(x):
 
 def solfa2quad( solfaList ):
   outputString = ""
+  count = 0
   for token in solfaList:
+    debug( "token["+token+"]\n" )
     parseData = parseNote(token)
     if parseData[2]:
       outputString += emitQuadruple(parseData)
+      count = count + 1
+      debug( `count`+". emit:"+emitQuadruple(parseData) )
     else:
       executeOp(token)
+      debug( "  -- op\n" )
   return outputString
   
 # The other two transformers:
