@@ -1,6 +1,6 @@
 /******************
 
- File: quad.c
+ File: quad2samp.c
  Purpose: take file of quadruples (freq, dur, decay, amplitude) as input,
  produce file of sampled waveform as output
 
@@ -19,31 +19,31 @@
 
   2. Complie this file:
 
-    % gcc quad.c -o quad
+    % gcc quad2samp.c -o quad2samp
 
   3. Create a text file of the sampled waveform:
 
-    % ./quad foo.quad
+    % ./quad2samp foo.quad foo.samp
 
   4. Create the corresponding .wav file:
 
-    % text2sf foo.samp foo.wav 44000 1 .90
+    % text2sf foo.samp foo.wav 44100 1 0.90
 
-  Here 44000 Hertz is the sample rate, 1 is the number
+  Here 44100 Hertz is the sample rate, 1 is the number
   of channels, and 0.90 is the gain.
 
   Note the output to the terminal window:
 
     TEXT2SF: convert text audio data to soundfile
     copying....
-    Done. 132000 sample frames copied to foo.wav
+    Done. 132300 sample frames copied to foo.wav
     PEAK information:
     CH 1:0.8989 at 2.0006 secs
 
   The program text2sf (See: "The Audio Programming Book",
-  Boulanger and Lazzarini, eds) has processed 132000 sample
-  frames, which checks: 3.0 seconds of sound x 44,000 sample
-  frames per second = 132,000 samples.
+  Boulanger and Lazzarini, eds) has processed 132300 sample
+  frames, which checks: 3.0 seconds of sound x 44,100 sample
+  frames per second = 132,300 samples.
 
   Note that foo.samp is a 1.4 MB file, while foo.wav is a 
   260 K file.  So 0.47 MB/sec for foo.samp, 87 KB/sec for
@@ -55,15 +55,15 @@
     % play foo.wav
 
   (Mac: ) This command brings up the QuickTime player loaded with foo.wav.
-  Click the pla button to listen to foo.wav.
+  Click the play button to listen to foo.wav.
 
  NOTE:  Since I am lazy, I usually package all of the above as follows:
 
  a.  Create a file m.sh with contents
 
-   gcc quad.c -o quad
-   ./quad foo.quad foo.samp
-   text2sf foo.samp foo.wav 44000 1 .90
+   gcc quad2samp.c -o quad2samp
+   ./quad2samp foo.quad foo.samp
+   text2sf foo.samp foo.wav 44100 1 .90
    rm foo.samp
    play foo.wav
   
@@ -75,7 +75,7 @@
 
   % m
 
- Thus when experimenting, I have only to type a single character to 
+ Thus when experimenting, you have only to type a single character to 
  test the each step.
 
 *************/
@@ -85,7 +85,7 @@
 #include <string.h>
 #include <math.h>
 
-
+// Strip trailing newline
 void stripnl(char *str) {
   while(strlen(str) && ( (str[strlen(str) - 1] == 13) || 
        ( str[strlen(str) - 1] == 10 ))) {
@@ -131,23 +131,29 @@ int main(int argc, char **argv) {
    float ATTACK = atof(argv[3]);
    float RELEASE = atof(argv[4]);
   
-   phase = 0;
+   phase = 0; // global phase -- runs from start to finish of waveform
    while( fgets(line, sizeof(line), infile) != NULL ) {
+   
      // Get each line from the infile 
-     tok = strtok(line, " ");
+     
     
-     /*                    */ freq = atof(tok);
+    // Parse the line to recover the elements
+    // of tuple as floats
+     tok = strtok(line, " "); freq = atof(tok);
      tok = strtok(NULL, " "); dur = atof(tok);
      tok = strtok(NULL, " "); decay = atof(tok);
      tok = strtok(NULL, " "); amplitude = atof(tok);
      
+     // Set up parameters
      nsamps = (int)(dur * srate);
 	 angleincr = twopi * freq / srate;
 	 k = dur/nsamps;
-	 a = exp(-k/decay);
-	 x = 1.0;
+	 dampingFactor = exp(-k/decay);
+	 dampingAmplitude = 1.0;
 	 
-	 int i; // i is the local phase
+	 int i; // local phase - use for a single tuple
+	 
+	 // Parameters for basic waveform shaping
 	 float endAttack = ATTACK*nsamps;
 	 float releaseSamples = RELEASE*nsamps;
 	 float beginRelease = nsamps - releaseSamples;
@@ -156,12 +162,14 @@ int main(int argc, char **argv) {
 	    phase++;
 	    float A, attackAmplitude, releaseAmplitude;
 	    
+	    // Compute attack amplitude
 	    if ( i < endAttack ) {
 	       attackAmplitude = pow(i/endAttack, 2);
 	     } else {
 	       attackAmplitude = 1.0;
 	    }
 	    
+	     // Compute release amplitude
 	    if ( i > beginRelease ) {
 	       float j = (nsamps - i)/(nsamps - beginRelease);
 	       releaseAmplitude = pow(j, 2);
@@ -169,14 +177,20 @@ int main(int argc, char **argv) {
 	       releaseAmplitude = 1.0;
 	    }
 	    
-	    A = attackAmplitude*releaseAmplitude*amplitude;
+	    // Update dampingAmplitude
+	    dampingAmplitude = dampingAmplitude*dampingFactor;
 	    
+	    // Final amplitude is a product of amplitudes
+	    A = attackAmplitude*releaseAmplitude*dampingAmplitude*amplitude;
+	    
+	    // Sample the shaped sine wave
      	samp = A*sin(angleincr*phase);
-		x *= a;
-		samp *= x;       
+
+		// Write the sample to file      
 		fprintf(outfile,"%.8lf\n",samp);		
 	 }
   }
+  
   // Close the files
   fclose(infile); 
   fclose(outfile);
