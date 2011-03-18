@@ -105,7 +105,10 @@ int main(int argc, char **argv) {
     FILE *infile, *outfile;
     char line[100];
     char *tok;
+    char *cmd;
+    char *arg[10]; // array of arguments
     float freq, dur, decay, amplitude;
+    float ATTACK, RELEASE;
 
     int srate = SRATE;
   
@@ -128,15 +131,39 @@ int main(int argc, char **argv) {
       exit(1);
     } 
   
+   /**
    float ATTACK = atof(argv[3]);
    float RELEASE = atof(argv[4]);
+   **/
   
    phase = 0; // global phase -- runs from start to finish of waveform
    while( fgets(line, sizeof(line), infile) != NULL ) {
    
      // Get each line from the infile 
      if (line[0] == '@') {
-     	printf("%s", line);
+     
+        // parse:
+     	printf("\nline:%s", line);
+     	tok = strtok(line, ":"); cmd = tok;
+     	arg[0] = tok = strtok(NULL, " ");
+     	arg[1] = tok = strtok(NULL, " ");
+     	printf("Parsed: %s:%s:%s\n", cmd, arg[0], arg[1]);
+     	
+     	// execute
+     	printf("Execute:\n");
+     	if (strcmp(cmd,"@attack") == 0) {
+     	  ATTACK = atof(arg[0]);
+     	  printf("cmd = ATTACK:%.3f\n", ATTACK);
+     	}
+     	if (strcmp(cmd,"@release") == 0) {
+     	  RELEASE = atof(arg[0]);
+     	  printf("cmd = RELEASE:%.3f\n", RELEASE);
+     	}
+     	if (strcmp(cmd,"@foo") == 0) {
+     	  printf("cmd = FOO\n");
+     	}
+     	
+     	printf("\n");
      } else {
 		
 		// Parse the line to recover the elements
