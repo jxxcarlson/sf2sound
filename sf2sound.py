@@ -439,7 +439,6 @@ def emitQuadruple(parseData):
     print 
     return catList([ `freq(root, nSemitones)`, `duration`, `decay`, `amplitude`])+"\n"
 
-
   
 def setTempo(t):
   global tempo, beatDuration
@@ -663,5 +662,4 @@ else:
   run(data, file)
   exit(0)
 
-
-
+// MASTER
