@@ -430,7 +430,7 @@ def emitQuadruple(parseData):
     duration1 = 0.7*duration
     duration2 = duration - duration1
     Q1 = catList([ `freq(root, nSemitones)`, `duration1`, `decay`, `amplitude`])+"\n"
-    Q2 = catList([ "0.0", `duration2`, `decay`, `amplitude`])+"\n"
+    Q2 = catList([ "0.0", `duration2`, `amplitude`, `decay`])+"\n"
     return Q1 + Q2
   
   notesEmitted = notesEmitted + 1

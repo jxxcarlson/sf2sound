@@ -141,8 +141,8 @@ int main(int argc, char **argv) {
     // of tuple as floats
      tok = strtok(line, " "); freq = atof(tok);
      tok = strtok(NULL, " "); dur = atof(tok);
-     tok = strtok(NULL, " "); decay = atof(tok);
      tok = strtok(NULL, " "); amplitude = atof(tok);
+     tok = strtok(NULL, " "); decay = atof(tok);
      
      // Set up parameters
      nsamps = (int)(dur * srate);
