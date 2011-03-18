@@ -449,7 +449,7 @@ def setTempo(t):
   setDurationSymbols()
   print "tempo:", tempo
   
-def executeOp(x):
+def executeOp(x, outputString):
   global duration, beatDuration, amplitude, decay
   global attack, release
   # rhythm symbol
@@ -515,6 +515,10 @@ def executeOp(x):
     op, operand = x.split(":")
     release = float(operand)
     
+  # pass command to quad2samp
+  elif x.find("@") == 0:
+    outputString += x;
+    
   else:
     # print "Unrecognized opcode:", x
     pass
@@ -530,7 +534,7 @@ def solfa2quad( solfaList ):
       count = count + 1
       debug( `count`+". emit:"+emitQuadruple(parseData) )
     else:
-      executeOp(token)
+      executeOp(token, outputString)
       debug( "  -- op\n" )
   return outputString
   
@@ -662,6 +666,8 @@ else:
   # Run program and store output in file
   run(data, file)
   exit(0)
+  
+# X1
 
 
 

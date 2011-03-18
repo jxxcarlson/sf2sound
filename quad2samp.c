@@ -135,65 +135,68 @@ int main(int argc, char **argv) {
    while( fgets(line, sizeof(line), infile) != NULL ) {
    
      // Get each line from the infile 
-     
-    
-    // Parse the line to recover the elements
-    // of tuple as floats
-     tok = strtok(line, " "); freq = atof(tok);
-     tok = strtok(NULL, " "); dur = atof(tok);
-     tok = strtok(NULL, " "); amplitude = atof(tok);
-     tok = strtok(NULL, " "); decay = atof(tok);
-     
-     // Set up parameters
-     nsamps = (int)(dur * srate);
-	 W = twopi * freq / srate;
-	 k = dur/nsamps;
-	 float dampingFactor = exp(-k/decay);
-	 float dampingAmplitude = 1.0;
-	 
-	 int i; // local phase - use for a single tuple
-	 
-	 // Parameters for basic waveform shaping
-	 float endAttack = ATTACK*nsamps;
-	 float releaseSamples = RELEASE*nsamps;
-	 float beginRelease = nsamps - releaseSamples;
-	 
-	 for( i = 0; i < nsamps; i++ ){
-	    phase++;
-	    float A, attackAmplitude, releaseAmplitude;
-	    
-	    // Compute attack amplitude
-	    if ( i < endAttack ) {
-	       attackAmplitude = pow(i/endAttack, 2);
-	     } else {
-	       attackAmplitude = 1.0;
-	    }
-	    
-	     // Compute release amplitude
-	    if ( i > beginRelease ) {
-	       float j = (nsamps - i)/(nsamps - beginRelease);
-	       releaseAmplitude = pow(j, 2);
-	     } else {
-	       releaseAmplitude = 1.0;
-	    }
-	    
-	    // Update dampingAmplitude
-	    dampingAmplitude = dampingAmplitude*dampingFactor;
-	    
-	    // Final amplitude is a product of amplitudes
-	    A = attackAmplitude*releaseAmplitude*dampingAmplitude*amplitude;
-	    
-	    // Form the sine wave and add harmonics to it
-     	samp = sin(W*phase);
-     	samp += -0.4*sin(2*W*phase);
-     	samp += +0.2*sin(3*W*phase);
-     	samp += -0.1*sin(4*W*phase);
-     	// Shape the wave
-     	samp *= A;
-     	
-
-		// Write the sample to file      
-		fprintf(outfile,"%.8lf\n",samp);		
+     if (line[0] == '@') {
+     	printf("%s", line);
+     } else {
+		
+		// Parse the line to recover the elements
+		// of tuple as floats
+		 tok = strtok(line, " "); freq = atof(tok);
+		 tok = strtok(NULL, " "); dur = atof(tok);
+		 tok = strtok(NULL, " "); amplitude = atof(tok);
+		 tok = strtok(NULL, " "); decay = atof(tok);
+		 
+		 // Set up parameters
+		 nsamps = (int)(dur * srate);
+		 W = twopi * freq / srate;
+		 k = dur/nsamps;
+		 float dampingFactor = exp(-k/decay);
+		 float dampingAmplitude = 1.0;
+		 
+		 int i; // local phase - use for a single tuple
+		 
+		 // Parameters for basic waveform shaping
+		 float endAttack = ATTACK*nsamps;
+		 float releaseSamples = RELEASE*nsamps;
+		 float beginRelease = nsamps - releaseSamples;
+		 
+		 for( i = 0; i < nsamps; i++ ){
+			phase++;
+			float A, attackAmplitude, releaseAmplitude;
+			
+			// Compute attack amplitude
+			if ( i < endAttack ) {
+			   attackAmplitude = pow(i/endAttack, 2);
+			 } else {
+			   attackAmplitude = 1.0;
+			}
+			
+			 // Compute release amplitude
+			if ( i > beginRelease ) {
+			   float j = (nsamps - i)/(nsamps - beginRelease);
+			   releaseAmplitude = pow(j, 2);
+			 } else {
+			   releaseAmplitude = 1.0;
+			}
+			
+			// Update dampingAmplitude
+			dampingAmplitude = dampingAmplitude*dampingFactor;
+			
+			// Final amplitude is a product of amplitudes
+			A = attackAmplitude*releaseAmplitude*dampingAmplitude*amplitude;
+			
+			// Form the sine wave and add harmonics to it
+			samp = sin(W*phase);
+			samp += -0.4*sin(2*W*phase);
+			samp += +0.2*sin(3*W*phase);
+			samp += -0.1*sin(4*W*phase);
+			// Shape the wave
+			samp *= A;
+			
+	
+			// Write the sample to file      
+			fprintf(outfile,"%.8lf\n",samp);		
+		 }
 	 }
   }
   
@@ -202,4 +205,4 @@ int main(int argc, char **argv) {
   fclose(outfile);
 }
 
-// MASTER
+// X1
