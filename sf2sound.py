@@ -176,6 +176,33 @@ def paddedString(j):
   else:
     return `j`
 
+def isWhiteSpace(S):
+  result = True
+  for c	in S:
+    if c not in	" \t":
+      result = False
+  return result
+
+def isComment(S):
+  k = S.find("//")
+  if k < 0:
+    return False
+  else:
+    T =	S[:k]
+    if isWhiteSpace(T):
+      return True
+    else:
+      return False
+
+def isNotComment(S):
+  if isComment(S):
+     return False
+  else:
+     return True
+     
+def stripComments(L):
+  return filter(isNotComment, L)
+  
 #################################################################
 #                    Note Parsing
 #################################################################
@@ -551,6 +578,7 @@ def run(data, fileName):
   sampFile = F+".samp"
   wavFile = F+".wav"
 
+  data = stripComments(data)
   quadruples =  solfa2quad(data)
   string2file( quadruples, quadFile)
   quad2samp(quadFile, sampFile)
