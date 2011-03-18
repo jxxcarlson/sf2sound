@@ -85,9 +85,6 @@ decay = 0.5
 amplitude = 1.0
 fundamentalFrequency = middleCFreq32
 
-attack = 0.01
-release = 0.02
-
 # frequency?
 # phrase ending: boolean
 
@@ -451,7 +448,8 @@ def setTempo(t):
   
 def executeOp(x, outputString):
   global duration, beatDuration, amplitude, decay
-  global attack, release
+  result = ""
+  
   # rhythm symbol
   if x in durationSymbols:
     duration = durationOfSymbol[x]
@@ -507,21 +505,17 @@ def executeOp(x, outputString):
     decay = LEGATO
   elif x.find("staccato:") == 0 or x.find("stacc:") == 0:
     decay = STACCATO
-
-  elif x.find("attack:") == 0:
-    op, operand = x.split(":")
-    attack = float(operand)
-  elif x.find("release:") == 0:
-    op, operand = x.split(":")
-    release = float(operand)
     
   # pass command to quad2samp
   elif x.find("@") == 0:
-    outputString += x;
+    print "PASS", x
+    result = x+"\n";
     
   else:
     # print "Unrecognized opcode:", x
     pass
+    
+  return result
 
 def solfa2quad( solfaList ):
   outputString = ""
@@ -534,7 +528,7 @@ def solfa2quad( solfaList ):
       count = count + 1
       debug( `count`+". emit:"+emitQuadruple(parseData) )
     else:
-      executeOp(token, outputString)
+      outputString += executeOp(token, outputString)
       debug( "  -- op\n" )
   return outputString
   
@@ -550,8 +544,7 @@ def quad2samp (inputFile, outputFile):
   # to create a wave sample file from
   # a *.quad file
 
-  print "attack:", attack, "release:", release
-  cmd = catList([QUAD2SAMP, inputFile, outputFile, `attack`, `release`])
+  cmd = catList([QUAD2SAMP, inputFile, outputFile])
   os.system(cmd)
 
 def samp2wav(inputFile, outputFile):
@@ -581,11 +574,15 @@ def run(data, fileName):
   quadFile = F+".quad"
   sampFile = F+".samp"
   wavFile = F+".wav"
-
+  
+  print "Parsing ..."
   data = stripComments(data)
+  print "Generating tuples ..."
   quadruples =  solfa2quad(data)
   string2file( quadruples, quadFile)
+  print "Generating waveform ..."
   quad2samp(quadFile, sampFile)
+  print "Generating audio file ..."
   samp2wav(sampFile, wavFile)
   if CLEANUP == ON:
     cmd = catList( ["rm", quadFile, ";", "rm", sampFile] )
