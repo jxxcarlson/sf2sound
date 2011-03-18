@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
 	int sr, nsamps, phase;
 	double samp,k,a,x;
 	double twopi = 2.0 * M_PI;
-	double angleincr;
+	double W;
 	double maxsamp = 0.0;
 
 
@@ -146,7 +146,7 @@ int main(int argc, char **argv) {
      
      // Set up parameters
      nsamps = (int)(dur * srate);
-	 angleincr = twopi * freq / srate;
+	 W = twopi * freq / srate;
 	 k = dur/nsamps;
 	 float dampingFactor = exp(-k/decay);
 	 float dampingAmplitude = 1.0;
@@ -183,8 +183,14 @@ int main(int argc, char **argv) {
 	    // Final amplitude is a product of amplitudes
 	    A = attackAmplitude*releaseAmplitude*dampingAmplitude*amplitude;
 	    
-	    // Sample the shaped sine wave
-     	samp = A*sin(angleincr*phase);
+	    // Form the sine wave and add harmonics to it
+     	samp = sin(W*phase);
+     	samp += -0.4*sin(2*W*phase);
+     	samp += +0.2*sin(3*W*phase);
+     	samp += -0.1*sin(4*W*phase);
+     	// Shape the wave
+     	samp *= A;
+     	
 
 		// Write the sample to file      
 		fprintf(outfile,"%.8lf\n",samp);		
