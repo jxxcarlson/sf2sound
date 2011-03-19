@@ -210,6 +210,14 @@ def isNotComment(S):
 def stripComments(L):
   return filter(isNotComment, L)
   
+def preprocess(input):
+  input = input.replace("|", "")
+  input = input.replace(" . ", " ")
+  print "\npreprocess:\n"
+  print input
+  print "/preprocess\n"
+  return input
+  
 #################################################################
 #                    Note Parsing
 #################################################################
@@ -414,37 +422,48 @@ def setDurationSymbols():
 # define the SF Machine
 
 def emitQuadruple(parseData):
+  # Process parsed note & accent
   global notesEmitted
   root, suffix, result = parseData
-    
-  # octave transposition
+  
+   # copy the current duration 
+  thisDuration = duration
+  increment = duration
+  
+  # dots
+  nDots = count(".", suffix)
+  for i in range(0, nDots):
+    increment = increment/2
+    thisDuration = thisDuration + increment
+
+  # adjustments to pitch
   nSemitones = 0
-  if suffix.find("_") > -1:
-    nSemitones = -12*count('_', suffix)
-  if suffix.find("^") > -1:
-    nSemitones = 12*count('^', suffix)
+  
+  # octave transposition
+  nSemitones = nSemitones - 12*count('_', suffix)
+  nSemitones = nSemitones + 12*count('^', suffix)
       
-  # transposition by n semitones
-  if suffix.find("-") > -1:
-    nSemitones = -count('-', suffix)
-  if suffix.find("+") > -1:
-    nSemitones = count('+', suffix)
+  # semitones
+  nSemitones = nSemitones - count('-', suffix)
+  nSemitones = nSemitones + count('+', suffix)
       
   # phrase endings
+  
   if suffix.find(",") == -1:
-    return catList([ `freq(root, nSemitones)`, `duration`, `decay`, `amplitude`])+"\n"
+    return catList([ `freq(root, nSemitones)`, `thisDuration`, `amplitude`, `decay`])+"\n"
   else: # return a shortened note followe by a compensating rest
-    duration1 = 0.7*duration
-    duration2 = duration - duration1
-    Q1 = catList([ `freq(root, nSemitones)`, `duration1`, `decay`, `amplitude`])+"\n"
+    duration1 = 0.7*thisDuration
+    duration2 = thisDuration - duration1
+    Q1 = catList([ `freq(root, nSemitones)`, `duration1`, `amplitude`, `decay`])+"\n"
     Q2 = catList([ "0.0", `duration2`, `amplitude`, `decay`])+"\n"
     return Q1 + Q2
+  
   
   notesEmitted = notesEmitted + 1
   print notesEmitted, root+suffix, "  ",
   if notesEmitted % 8 == 0:
     print 
-    return catList([ `freq(root, nSemitones)`, `duration`, `decay`, `amplitude`])+"\n"
+    return catList([ `freq(root, nSemitones)`, `thisDuration`, `amplitude`, `decay`])+"\n"
 
   
 def setTempo(t):
@@ -665,7 +684,7 @@ elif sys.argv[1] == "-f":
   file = sys.argv[2]
   data = file2string(file)
   # Clean up the input data
-  data = data.replace("|", " | ")  # add white space to prevent stupid syntax errors
+  data = preprocess(data)
   data = data.replace("\n", " ")
   data = data.split(" ")
   data = filter( lambda x: len(x), data )
@@ -675,12 +694,10 @@ elif sys.argv[1] == "-f":
 else:
   file = sys.argv[1]
   data = sys.argv[2]
-  data = data.replace("|", " | ")  # add white space to prevent stupid syntax errors
+  data = preprocess(data)
   data = data.split(" ")
   # Run program and store output in file
   run(data, file)
   exit(0)
   
-# X1
-
-// MASTER
+# X1-MASTER MERGED
