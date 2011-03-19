@@ -12,7 +12,7 @@
 # Output: A sound file phrase.wav.  When you play it, you will hear the tuee.
 
 # Author: Hakon Hallgrimur
-# Date:  March 14, 2011
+# Date:  March 19, 2011
 
 # INSTALLATION: 
 # Be sure to set the variables TEXT2SF and QUAD2SAMP to the correct paths
