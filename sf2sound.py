@@ -472,6 +472,7 @@ def emitQuadruple(parseData):
   if crescendoBeatsRemaining > 0:
     debug("crescendoBeatsRemaining: "+`round(100*crescendoBeatsRemaining)/100`)
     amplitude = currentCrescendoSpeed*amplitude
+    debug("emitQuadruples, currentCrescendoSpeed = "+`currentCrescendoSpeed`)
     crescendoBeatsRemaining = crescendoBeatsRemaining - thisDuration/beatDuration
 
   # phrase endings
@@ -496,7 +497,7 @@ def setTempo(t):
   
 def executeOp(x, outputString):
   global duration, beatDuration, amplitude, decay
-  global crescendoBeatsRemaining
+  global crescendoBeatsRemaining, currentCrescendoSpeed
   result = ""
   
   # rhythm symbol
@@ -556,6 +557,20 @@ def executeOp(x, outputString):
       op2 = float(0.0)
     debug("crescendo: "+`op1`+", "+`op2`+"\n")
     crescendoBeatsRemaining = op1
+    currentCrescendoSpeed = crescendoSpeed
+    debug("executeOp, cresc, currentCrescendoSpeed = "+`currentCrescendoSpeed`)
+  elif x.find("decresc:") == 0 or x.find("decrescendo:") == 0:
+    parsed = x.split(":")
+    nOperands = len(parsed) - 1
+    op1 = float(parsed[1])
+    if nOperands == 2:
+      op1 = float(parsed[2])
+    else:
+      op2 = float(0.0)
+    debug("decrescendo: "+`op1`+", "+`op2`+"\n")
+    crescendoBeatsRemaining = op1
+    currentCrescendoSpeed = 1.0/crescendoSpeed
+    debug("executeOp, decresc, currentCrescendoSpeed = "+`currentCrescendoSpeed`)
    
   # articulation
   elif x.find("decay:") == 0:
