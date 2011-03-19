@@ -35,13 +35,13 @@ TEXT2SF = "~/Dropbox/bin/text2sf"
 QUAD2SAMP = "~/Dropbox/bin/quad2samp"
 
 # recording level 1.0 creates obnoxious distortion
-RECORDING_LEVEL = "0.5" 
+RECORDING_LEVEL = "0.2" 
 
 ON = 1
 OFF = 0
 
 CLEANUP = OFF
-DEBUG = ON
+DEBUG = OFF
 
 # AMPLITUDES:
 FORTISSIMO = 1.0
@@ -474,9 +474,10 @@ def emitQuadruple(parseData):
     amplitude = currentCrescendoSpeed*amplitude
     debug("emitQuadruples, currentCrescendoSpeed = "+`currentCrescendoSpeed`)
     crescendoBeatsRemaining = crescendoBeatsRemaining - thisDuration/beatDuration
-
+  debug(paddedString(root+suffix)+": "+`round(100*crescendoBeatsRemaining)/100`)
   # phrase endings
-  
+      
+  # Return quadruple
   if suffix.find(",") == -1:
     return catList([ `freq(root, nSemitones)`, `thisDuration`, `amplitude`, `decay`])+"\n"
   else: # return a shortened note followe by a compensating rest
@@ -552,25 +553,21 @@ def executeOp(x, outputString):
     nOperands = len(parsed) - 1
     op1 = float(parsed[1])
     if nOperands == 2:
-      op1 = float(parsed[2])
+      op2 = parsed[2]
     else:
-      op2 = float(0.0)
-    debug("crescendo: "+`op1`+", "+`op2`+"\n")
+      op2 = ""
     crescendoBeatsRemaining = op1
     currentCrescendoSpeed = crescendoSpeed
-    debug("executeOp, cresc, currentCrescendoSpeed = "+`currentCrescendoSpeed`)
   elif x.find("decresc:") == 0 or x.find("decrescendo:") == 0:
     parsed = x.split(":")
     nOperands = len(parsed) - 1
     op1 = float(parsed[1])
     if nOperands == 2:
-      op1 = float(parsed[2])
+      op2 = parsed[2]
     else:
-      op2 = float(0.0)
-    debug("decrescendo: "+`op1`+", "+`op2`+"\n")
+      op2 = ""
     crescendoBeatsRemaining = op1
     currentCrescendoSpeed = 1.0/crescendoSpeed
-    debug("executeOp, decresc, currentCrescendoSpeed = "+`currentCrescendoSpeed`)
    
   # articulation
   elif x.find("decay:") == 0:

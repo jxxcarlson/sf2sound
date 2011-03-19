@@ -1,7 +1,7 @@
 /******************
 
  File: quad2samp.c
- Purpose: take file of quadruples (freq, dur, decay, amplitude) as input,
+ Purpose: take file of quadruples (freq, dur, decay, amplitude) as input,ff
  produce file of sampled waveform as output
 
  Example:
@@ -143,27 +143,27 @@ int main(int argc, char **argv) {
      if (line[0] == '@') {
      
         // parse:
-     	printf("\nline:%s", line);
+     	// printf("\nline:%s", line);
      	tok = strtok(line, ":"); cmd = tok;
      	arg[0] = tok = strtok(NULL, " ");
      	arg[1] = tok = strtok(NULL, " ");
-     	printf("Parsed: %s:%s:%s\n", cmd, arg[0], arg[1]);
+     	// printf("Parsed: %s:%s:%s\n", cmd, arg[0], arg[1]);
      	
      	// execute
-     	printf("Execute:\n");
+     	// printf("Execute:\n");
      	if (strcmp(cmd,"@attack") == 0) {
      	  ATTACK = atof(arg[0]);
-     	  printf("cmd = ATTACK:%.3f\n", ATTACK);
+     	  // printf("cmd = ATTACK:%.3f\n", ATTACK);
      	}
      	if (strcmp(cmd,"@release") == 0) {
      	  RELEASE = atof(arg[0]);
-     	  printf("cmd = RELEASE:%.3f\n", RELEASE);
+     	  // printf("cmd = RELEASE:%.3f\n", RELEASE);
      	}
      	if (strcmp(cmd,"@foo") == 0) {
-     	  printf("cmd = FOO\n");
+     	  // printf("cmd = FOO\n");
      	}
      	
-     	printf("\n");
+     	// printf("\n");
      } else {
 		
 		// Parse the line to recover the elements
