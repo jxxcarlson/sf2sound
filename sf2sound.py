@@ -41,7 +41,7 @@ ON = 1
 OFF = 0
 
 CLEANUP = OFF
-DEBUG = OFF
+DEBUG = ON
 
 # AMPLITUDES:
 FORTISSIMO = 1.0
@@ -80,12 +80,20 @@ CFreq_3 = CFreq_2/2      #  32.70319566257484 Hertz
 
 beat = "q" # values: h (half), q (quarter), e (eighth)
 tempo = 72  
-beat = "q"
 beatDuration = 60.0/tempo
 duration = beatDuration 
+
+elapsedTime = 0
+currentBeat = 0
+
 decay = 0.5
 amplitude = 1.0
 fundamentalFrequency = middleCFreq
+
+# for dynamics
+crescendoSpeed = 1.1
+currentCrescendoSpeed = crescendoSpeed
+crescendoBeatsRemaining = 0.0
 
 # frequency?
 # phrase ending: boolean
@@ -174,6 +182,13 @@ def paddedString(j):
     return "0"+`j`
   else:
     return `j`
+    
+def padString(s,n):
+  j = len(s)
+  for i in range(0,n-j):
+    s = s+" "
+  return s
+
 
 def isWhiteSpace(S):
   result = True
@@ -213,9 +228,6 @@ def stripComments(L):
 def preprocess(input):
   input = input.replace("|", "")
   input = input.replace(" . ", " ")
-  print "\npreprocess:\n"
-  print input
-  print "/preprocess\n"
   return input
   
 #################################################################
@@ -423,7 +435,9 @@ def setDurationSymbols():
 
 def emitQuadruple(parseData):
   # Process parsed note & accent
-  global notesEmitted
+  global notesEmitted, elapsedTime
+  global crescendoBeatsRemaining, currentCrescendoSpeed, amplitude
+  
   root, suffix, result = parseData
   
    # copy the current duration 
@@ -447,6 +461,19 @@ def emitQuadruple(parseData):
   nSemitones = nSemitones - count('-', suffix)
   nSemitones = nSemitones + count('+', suffix)
       
+      
+  notesEmitted = notesEmitted + 1
+  elapsedTime = elapsedTime + thisDuration
+  currentBeat = elapsedTime/beatDuration
+  # print notesEmitted, root+suffix, "  ",
+  debug(padString(root+suffix,6) + `round(100*elapsedTime)` + "  "+`round(100*currentBeat)/100.0`+"\n")
+
+  # crescendo/decrescendo
+  if crescendoBeatsRemaining > 0:
+    debug("crescendoBeatsRemaining: "+`round(100*crescendoBeatsRemaining)/100`)
+    amplitude = currentCrescendoSpeed*amplitude
+    crescendoBeatsRemaining = crescendoBeatsRemaining - thisDuration/beatDuration
+
   # phrase endings
   
   if suffix.find(",") == -1:
@@ -459,13 +486,6 @@ def emitQuadruple(parseData):
     return Q1 + Q2
   
   
-  notesEmitted = notesEmitted + 1
-  print notesEmitted, root+suffix, "  ",
-  if notesEmitted % 8 == 0:
-    print 
-    return catList([ `freq(root, nSemitones)`, `thisDuration`, `amplitude`, `decay`])+"\n"
-
-  
 def setTempo(t):
   global tempo, beatDuration
   tempo = t
@@ -476,6 +496,7 @@ def setTempo(t):
   
 def executeOp(x, outputString):
   global duration, beatDuration, amplitude, decay
+  global crescendoBeatsRemaining
   result = ""
   
   # rhythm symbol
@@ -524,6 +545,17 @@ def executeOp(x, outputString):
     amplitude = PIANO
   elif x.find("pianissimo:") == 0  or x.find("pp:") == 0:
     amplitude = PIANISSIMO
+    
+  elif x.find("cresc:") == 0 or x.find("crescendo:") == 0:
+    parsed = x.split(":")
+    nOperands = len(parsed) - 1
+    op1 = float(parsed[1])
+    if nOperands == 2:
+      op1 = float(parsed[2])
+    else:
+      op2 = float(0.0)
+    debug("crescendo: "+`op1`+", "+`op2`+"\n")
+    crescendoBeatsRemaining = op1
    
   # articulation
   elif x.find("decay:") == 0:
@@ -552,15 +584,15 @@ def solfa2quad( solfaList ):
   outputString += "@harmonics:1.0:0.5:0.25:0.125\n"
   count = 0
   for token in solfaList:
-    debug( "token["+token+"]\n" )
+    # debug( "token["+token+"]\n" )
     parseData = parseNote(token)
     if parseData[2]:
       outputString += emitQuadruple(parseData)
       count = count + 1
-      debug( `count`+". emit:"+emitQuadruple(parseData) )
+      # debug( `count`+". emit:"+emitQuadruple(parseData) )
     else:
       outputString += executeOp(token, outputString)
-      debug( "  -- op\n" )
+      # ( "  -- op\n" )
   return outputString
   
 # The other two transformers:
