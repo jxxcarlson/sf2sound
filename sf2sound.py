@@ -72,7 +72,9 @@ PRESTISSIMO = 208
 
 semitoneFactor = exp(log(2)/12.0)
 middleCFreq = 261.62556530059868
-middleCFreq32 = middleCFreq/8
+CFreq_1 = middleCFreq/2  # 130.81278265029934 Hertz
+CFreq_2 = CFreq_1/2      #  65.40639132514967 Hertz
+CFreq_3 = CFreq_2/2      #  32.70319566257484 Hertz
 
 # SF REGISTERS:
 
@@ -80,13 +82,10 @@ beat = "q" # values: h (half), q (quarter), e (eighth)
 tempo = 72  
 beat = "q"
 beatDuration = 60.0/tempo
-duration = beat 
+duration = beatDuration 
 decay = 0.5
 amplitude = 1.0
-fundamentalFrequency = middleCFreq32
-
-attack = 0.01
-release = 0.02
+fundamentalFrequency = middleCFreq
 
 # frequency?
 # phrase ending: boolean
@@ -193,6 +192,14 @@ def isComment(S):
       return True
     else:
       return False
+
+def count(c,s):
+  # return occurences of charater c in string s                                             
+  n = 0
+  for x in s:
+    if x == c:
+      n = n + 1
+  return n
 
 def isNotComment(S):
   if isComment(S):
@@ -413,15 +420,15 @@ def emitQuadruple(parseData):
   # octave transposition
   nSemitones = 0
   if suffix.find("_") > -1:
-    nSemitones = -12
+    nSemitones = -12*count('_', suffix)
   if suffix.find("^") > -1:
-    nSemitones = 12
+    nSemitones = 12*count('^', suffix)
       
   # transposition by n semitones
   if suffix.find("-") > -1:
-    nSemitones = -1
+    nSemitones = -count('-', suffix)
   if suffix.find("+") > -1:
-    nSemitones = 1 
+    nSemitones = count('+', suffix)
       
   # phrase endings
   if suffix.find(",") == -1:
@@ -448,9 +455,10 @@ def setTempo(t):
   setDurationSymbols()
   print "tempo:", tempo
   
-def executeOp(x):
+def executeOp(x, outputString):
   global duration, beatDuration, amplitude, decay
-  global attack, release
+  result = ""
+  
   # rhythm symbol
   if x in durationSymbols:
     duration = durationOfSymbol[x]
@@ -506,20 +514,23 @@ def executeOp(x):
     decay = LEGATO
   elif x.find("staccato:") == 0 or x.find("stacc:") == 0:
     decay = STACCATO
-
-  elif x.find("attack:") == 0:
-    op, operand = x.split(":")
-    attack = float(operand)
-  elif x.find("release:") == 0:
-    op, operand = x.split(":")
-    release = float(operand)
+    
+  # pass command to quad2samp
+  elif x.find("@") == 0:
+    print "PASS", x
+    result = x+"\n";
     
   else:
     # print "Unrecognized opcode:", x
     pass
+    
+  return result
 
 def solfa2quad( solfaList ):
-  outputString = ""
+  # First, set defaults. These can be overridden
+  outputString =  "@attack:0.02\n"
+  outputString += "@release:0.04\n"
+  outputString += "@harmonics:1.0:0.5:0.25:0.125\n"
   count = 0
   for token in solfaList:
     debug( "token["+token+"]\n" )
@@ -529,7 +540,7 @@ def solfa2quad( solfaList ):
       count = count + 1
       debug( `count`+". emit:"+emitQuadruple(parseData) )
     else:
-      executeOp(token)
+      outputString += executeOp(token, outputString)
       debug( "  -- op\n" )
   return outputString
   
@@ -545,8 +556,7 @@ def quad2samp (inputFile, outputFile):
   # to create a wave sample file from
   # a *.quad file
 
-  print "attack:", attack, "release:", release
-  cmd = catList([QUAD2SAMP, inputFile, outputFile, `attack`, `release`])
+  cmd = catList([QUAD2SAMP, inputFile, outputFile])
   os.system(cmd)
 
 def samp2wav(inputFile, outputFile):
@@ -576,11 +586,15 @@ def run(data, fileName):
   quadFile = F+".quad"
   sampFile = F+".samp"
   wavFile = F+".wav"
-
+  
+  print "Parsing ..."
   data = stripComments(data)
+  print "Generating tuples ..."
   quadruples =  solfa2quad(data)
   string2file( quadruples, quadFile)
+  print "Generating waveform ..."
   quad2samp(quadFile, sampFile)
+  print "Generating audio file ..."
   samp2wav(sampFile, wavFile)
   if CLEANUP == ON:
     cmd = catList( ["rm", quadFile, ";", "rm", sampFile] )
@@ -644,10 +658,14 @@ elif sys.argv[1] == "-rhythm":
   print "Rhythm dictionary:"
   prettyPrintDictionary(durationOfSymbol)
   exit(0)
+elif len(sys.argv) == 2:
+  print "Too few arguments"
+  exit(0)
 elif sys.argv[1] == "-f":
   file = sys.argv[2]
   data = file2string(file)
   # Clean up the input data
+  data = data.replace("|", " | ")  # add white space to prevent stupid syntax errors
   data = data.replace("\n", " ")
   data = data.split(" ")
   data = filter( lambda x: len(x), data )
@@ -657,9 +675,12 @@ elif sys.argv[1] == "-f":
 else:
   file = sys.argv[1]
   data = sys.argv[2]
+  data = data.replace("|", " | ")  # add white space to prevent stupid syntax errors
   data = data.split(" ")
   # Run program and store output in file
   run(data, file)
   exit(0)
+  
+# X1
 
 // MASTER
