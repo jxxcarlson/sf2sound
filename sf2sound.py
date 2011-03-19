@@ -35,7 +35,7 @@ TEXT2SF = "~/Dropbox/bin/text2sf"
 QUAD2SAMP = "~/Dropbox/bin/quad2samp"
 
 # recording level 1.0 creates obnoxious distortion
-RECORDING_LEVEL = "0.2" 
+RECORDING_LEVEL = 0.5 
 
 ON = 1
 OFF = 0
@@ -94,6 +94,7 @@ fundamentalFrequency = middleCFreq
 crescendoSpeed = 1.1
 currentCrescendoSpeed = crescendoSpeed
 crescendoBeatsRemaining = 0.0
+maximumAmplitude = 0.0
 
 # frequency?
 # phrase ending: boolean
@@ -437,6 +438,7 @@ def emitQuadruple(parseData):
   # Process parsed note & accent
   global notesEmitted, elapsedTime
   global crescendoBeatsRemaining, currentCrescendoSpeed, amplitude
+  global maximumAmplitude
   
   root, suffix, result = parseData
   
@@ -477,6 +479,10 @@ def emitQuadruple(parseData):
   debug(paddedString(root+suffix)+": "+`round(100*crescendoBeatsRemaining)/100`)
   # phrase endings
       
+  # compute maximum amplitude (global variable)    
+  if amplitude > maximumAmplitude:
+    maximumAmplitude = amplitude
+    
   # Return quadruple
   if suffix.find(",") == -1:
     return catList([ `freq(root, nSemitones)`, `thisDuration`, `amplitude`, `decay`])+"\n"
@@ -630,7 +636,11 @@ def samp2wav(inputFile, outputFile):
   #
   # to generate a .wav from a .samp fiie
 
-  cmd = cmd = catList([TEXT2SF, inputFile, outputFile, "44100", "1", RECORDING_LEVEL])
+  recording_level = RECORDING_LEVEL/maximumAmplitude
+  print "maximum amplitude:", maximumAmplitude
+  print "recording level:", recording_level
+  
+  cmd = cmd = catList([TEXT2SF, inputFile, outputFile, "44100", "1", `recording_level`])
   os.system(cmd)
 
 ##############################################################################
