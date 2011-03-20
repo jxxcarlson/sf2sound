@@ -11,8 +11,8 @@
 #            the fie are read from disk.
 # Output: A sound file phrase.wav.  When you play it, you will hear the tuee.
 
-# Author: Hakon Hallgrimur
-# Date:  March 19, 2011
+# Authors: James Carlson and Hakon Hallgrimur
+# Date:  March 20, 2011
 
 # INSTALLATION: 
 # Be sure to set the variables TEXT2SF and QUAD2SAMP to the correct paths

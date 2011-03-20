@@ -6,6 +6,26 @@ for creating sound files from text such as
 This is a collabarative project:
 
   James Carlson, Hakon Hallgrimur
+  
+--------------
+Example1 (input from command line)
+
+	%  /.solfa2sf phrase '|| q do re . e mi re do re | mi x fa x h sol ||' 
+	% play phrase.wav
+
+Her "play" is any program capable of playing .wav files.
+
+Example 2: Ss above, excep that the contents of nthe fie are read from disk.
+
+    % /.solfa2sf -f theme.txt 
+    % play theme.wav
+
+For theme.txt -- see this github: http://help.github.com .
+-----------------------
+
+=================================================================    
+
+
 
 -------------
 Parts:
