@@ -8,7 +8,7 @@ This is a collabarative project:
   James Carlson, Hakon Hallgrimur
   
 --------------
-Example1 (input from command line)
+Example 1. (input from command line)
 
 	%  /.solfa2sf phrase '|| q do re . e mi re do re | mi x fa x h sol ||' 
 	% play phrase.wav
@@ -21,6 +21,10 @@ Example 2: As above, excep that the contents of nthe fie are read from disk.
     % play theme.wav
 
 For theme.txt -- see this github: http://gitub.com/jxxcarlson/sf2sound/  .
+
+The sound file theme.wav for various versions of sf2sound
+can be found at http://hhallgrimur.wordpress.com/code/
+
 ---------------------
 
 Parts:
