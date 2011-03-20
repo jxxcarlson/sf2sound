@@ -20,7 +20,7 @@ Example 2: Ss above, excep that the contents of nthe fie are read from disk.
     % /.solfa2sf -f theme.txt 
     % play theme.wav
 
-For theme.txt -- see this github: http://help.github.com .
+For theme.txt -- see this github: http://gitub.com/jxxcarlson/sf2sound/  .
 -----------------------
 
 =================================================================    
