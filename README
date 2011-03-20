@@ -1,0 +1,29 @@
+sf2sound is a unix command-line program 
+for creating sound files from text such as
+ 
+     moderato: do re mi.
+
+This is a collabarative project:
+
+  James Carlson, Hakon Hallgrimur
+
+-------------
+Parts:
+
+  1. sf2sound.py
+  2. quad2samp.c
+  3. text2sf
+
+Parts 1 and 2 are in this repository.  Part 3 comes 
+with "The Audio Programming Book" by Boulanger
+and Lazzarini.  Later, I will try to find a 
+source for it on the internet.
+
+For sf2sound to have access to parts 2 and 3, the 
+following variables in sf2sound.py must be set
+
+# Location of text2sf and quad2samp in system:
+TEXT2SF = "~/Dropbox/bin/text2sf"
+QUAD2SAMP = "~/Dropbox/bin/quad2samp"
+
+Search the text of sf2sound.py for these.
