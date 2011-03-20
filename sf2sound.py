@@ -43,6 +43,8 @@ OFF = 0
 CLEANUP = OFF
 DEBUG = OFF
 
+BREATH = 0.3
+
 # AMPLITUDES:
 FORTISSIMO = 1.0
 FORTE = 0.85
@@ -437,6 +439,7 @@ def setDurationSymbols():
 def emitQuadruple(parseData):
   # Process parsed note & accent
   global notesEmitted, elapsedTime
+  global BREATH
   global crescendoBeatsRemaining, currentCrescendoSpeed, amplitude
   global maximumAmplitude
   
@@ -487,8 +490,8 @@ def emitQuadruple(parseData):
   if suffix.find(",") == -1:
     return catList([ `freq(root, nSemitones)`, `thisDuration`, `amplitude`, `decay`])+"\n"
   else: # return a shortened note followe by a compensating rest
-    duration1 = 0.7*thisDuration
-    duration2 = thisDuration - duration1
+    duration2 = thisDuration*BREATH
+    duration1 = thisDuration - duration2
     Q1 = catList([ `freq(root, nSemitones)`, `duration1`, `amplitude`, `decay`])+"\n"
     Q2 = catList([ "0.0", `duration2`, `amplitude`, `decay`])+"\n"
     return Q1 + Q2
@@ -505,6 +508,8 @@ def setTempo(t):
 def executeOp(x, outputString):
   global duration, beatDuration, amplitude, decay
   global crescendoBeatsRemaining, currentCrescendoSpeed
+  global BREATH
+  
   result = ""
   
   # rhythm symbol
@@ -583,6 +588,9 @@ def executeOp(x, outputString):
     decay = LEGATO
   elif x.find("staccato:") == 0 or x.find("stacc:") == 0:
     decay = STACCATO
+  elif x.find("breath:") == 0:
+    op, operand = x.split(":")
+    BREATH = float(operand)
     
   # pass command to quad2samp
   elif x.find("@") == 0:
