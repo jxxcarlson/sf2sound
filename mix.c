@@ -1,8 +1,9 @@
 /******************
 
- File: mix.c
+ File: mix2.c
 
  Purpose: Merge two audio sample files into one
+ -- by adding values
 
 *************/
 
@@ -71,8 +72,9 @@ int main(int argc, char **argv) {
       // Write one frame = pair of lines to output:
 
       if ( scanning ) {
-	fprintf(outfile,"%s",line1);
-	fprintf(outfile,"%s",line2);
+	double samp1 = atof(line1);
+        double samp2 = atof(line2);
+        fprintf(outfile,"%.8lf\n",(samp1 + samp2)/4.0);
       }
     }
   
