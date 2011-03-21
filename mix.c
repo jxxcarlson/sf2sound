@@ -56,15 +56,23 @@ int main(int argc, char **argv) {
     int lineCount = 0;
     while( scanning ) {
 
-     // Get each line from the infile 
+     // Read a line from each input file:
 
       char *result1 = fgets(line1, sizeof(line1), infile1);
       char *result2 = fgets(line2, sizeof(line2), infile2);
+
       if ((result1 != NULL) && (result2 != NULL)) {
 	scanning = 1;
 	lineCount++;
       } else {
 	scanning = 0;
+      }
+
+      // Write one frame = pair of lines to output:
+
+      if ( scanning ) {
+	fprintf(outfile,"%s",line1);
+	fprintf(outfile,"%s",line2);
       }
     }
   
