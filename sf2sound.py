@@ -430,6 +430,9 @@ def setDurationSymbols():
   durationOfSymbol["q"] = setDuration("q")
   durationOfSymbol["e"] = setDuration("e")
   durationOfSymbol["s"] = setDuration("s") 
+  durationOfSymbol["t"] = setDuration("t") 
+  durationOfSymbol["tt"] = setDuration("tt") 
+  durationOfSymbol["ttt"] = setDuration("ttt") 
   durationSymbols = durationOfSymbol.keys()
    
 ################################################################################
