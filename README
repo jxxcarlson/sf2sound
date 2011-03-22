@@ -10,15 +10,15 @@ This is a collabarative project:
 --------------
 Example 1. (input from command line)
 
-	%  /.solfa2sf phrase '|| q do re . e mi re do re | mi x fa x h sol ||' 
+	% /.solfa2sf phrase '|| q do re . e mi re do re | mi x fa x h sol ||' 
 	% play phrase.wav
 
 Here "play" is any program capable of playing .wav files.
 
-Example 2: As above, excep that the contents of nthe fie are read from disk.
+Example 2: As above, except that the contents of the file are read from disk.
 
-    % /.solfa2sf -f theme.txt 
-    % play theme.wav
+        % /.solfa2sf -f theme.txt 	 
+        % play theme.wav
 
 For theme.txt -- see this github: http://gitub.com/jxxcarlson/sf2sound/  .
 
@@ -29,20 +29,21 @@ can be found at http://hhallgrimur.wordpress.com/code/
 
 Parts:
 
-  1. sf2sound.py
-  2. quad2samp.c
-  3. text2sf
+        1. sf2sound.py
+        2. quad2samp.c
+        3. text2sf
 
 Parts 1 and 2 are in this repository.  Part 3 comes 
 with "The Audio Programming Book" by Boulanger
 and Lazzarini.  Later, I will try to find a 
 source for it on the internet.
 
-For sf2sound to have access to parts 2 and 3, the 
-following variables in sf2sound.py must be set
+For sf2sound to have access to parts 2 and 3, two
+variables in sf2sound.py must be set --
+TEXT2SF and  QUAD2SAMP, e.g.,
 
-# Location of text2sf and quad2samp in system:
-TEXT2SF = "~/Dropbox/bin/text2sf"
-QUAD2SAMP = "~/Dropbox/bin/quad2samp"
+         # Location of text2sf and quad2samp in system:
+         TEXT2SF = "~/Dropbox/bin/text2sf"
+      	    QUAD2SAMP = "~/Dropbox/bin/quad2samp"
 
 Search the text of sf2sound.py for these.
