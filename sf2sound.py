@@ -401,6 +401,12 @@ def setDurationQ(symbol):
     return beatDuration/2
   elif symbol == "s":
     return beatDuration/4
+  elif symbol == "t":
+    return beatDuration/3
+  elif symbol == "tt":
+    return beatDuration/6
+  elif symbol == "ttt":
+    return beatDuration/9
   else: # error, fail gracefully
     return 0
 
