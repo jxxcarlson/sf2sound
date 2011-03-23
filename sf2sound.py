@@ -635,10 +635,12 @@ def executeOp(x, outputString):
 
 def solfa2quad( solfaList ):
   # First, set defaults. These can be overridden
+  global elapsedTime
   outputString =  "@attack:0.02\n"
   outputString += "@release:0.04\n"
   outputString += "@harmonics:1.0:0.5:0.25:0.125\n"
   count = 0
+  elapsedTime = 0.0
   for token in solfaList:
     # debug( "token["+token+"]\n" )
     parseData = parseNote(token)
@@ -740,22 +742,26 @@ def run(data, fileName):
   
   v = 0
   waveformFiles = [ ]
+  global duratins
+  durations = [ ]
   for voice in voices:
     print "VOICE "+`v+1`+":"
     print "  ... quadruples"
     tokens = voice.split(" ")
     quadruples = solfa2quad(tokens)
+    print "  ... duration:", elapsedTime, "seconds"
+    durations.append(elapsedTime)
     file = "tmp"+`v`
     quadfile = file+".quad"
     string2file( quadruples, quadfile)
-    
+
     print "  ... waveform"
     sampfile = file+".samp"
     quad2samp(quadfile, sampfile)
     waveformFiles.append(sampfile)
     
     v = v + 1
-  
+  print "Durations:", durations
   if v > 1:
     mixfile = "tmp-mix.samp"
     cmd = catList(["mix"] + waveformFiles + [mixfile]) 
