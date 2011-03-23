@@ -233,6 +233,27 @@ def preprocess(input):
   input = input.replace(" . ", " ")
   return input
   
+  
+def countString(s, t):
+  # number of occurences of s in t                                               
+  k = t.find(s)
+  if k > - 1:
+    b = k + len(s)
+    return 1 + countString(s, t[b:])
+  else:
+    return 0
+  
+  
+def getChunk(str, start_tag, end_tag):
+  """                                                                                         
+  Return the chunk of str that is delimited by start_tag and end_tag.                                                                  
+  """
+  a = string.find(str, start_tag)
+  b = string.find(str, end_tag)
+  result = str[a:b]
+  n = len(start_tag)
+  return string.strip(result[n:])
+  
 #################################################################
 #                    Note Parsing
 #################################################################
@@ -670,6 +691,39 @@ def samp2wav(inputFile, outputFile):
 #
 ##############################################################################
 
+# @run:
+
+def getVoices(data):
+  # return list of voices from string data
+
+  # find number of voices
+  nv = countString("voice:", data)
+  print nv, "voices"
+  
+  # normalize input
+  if nv == 0:
+    nv = 1
+    data = "voice:1 "+data
+    
+  # put first nv - 1 voices in list "voices"  
+  voices = [ ]
+  for i in range(0,nv-1):
+    begin = "voice:"+`i+1`
+    end = "voice:"+`i+2`
+    voice = getChunk(data, begin, end)
+    k = data.find(end)
+    data = data[k:]
+    voices.append(voice)
+  begin = "voice:"+`nv`
+  k = len(begin)
+  voices.append(data[k:])
+
+  # return list
+  return voices
+  
+  
+  print voices
+
 def run(data, fileName):
 
   F = fileName.split(".")[0]
@@ -678,20 +732,46 @@ def run(data, fileName):
   wavFile = F+".wav"
   
   print "Parsing ..."
+  data = data.replace("\n", " ")
   data = stripComments(data)
   
-  print "Generating tuples ..."
-  quadruples =  solfa2quad(data)
-  string2file( quadruples, quadFile)
+  voices = getVoices(data)
+  print voices
   
-  print "Generating waveform ..."
-  quad2samp(quadFile, sampFile)
+  v = 0
+  waveformFiles = [ ]
+  for voice in voices:
+    print "VOICE "+`v+1`+":"
+    print "  ... quadruples"
+    tokens = voice.split(" ")
+    quadruples = solfa2quad(tokens)
+    file = "tmp"+`v`
+    quadfile = file+".quad"
+    string2file( quadruples, quadfile)
+    
+    print "  ... waveform"
+    sampfile = file+".samp"
+    quad2samp(quadfile, sampfile)
+    waveformFiles.append(sampfile)
+    
+    v = v + 1
   
-  print "Generating audio file ..."
-  samp2wav(sampFile, wavFile)
+  if v > 1:
+    mixfile = "tmp-mix.samp"
+    cmd = catList(["mix"] + waveformFiles + [mixfile]) 
+    print "OUTPUT:"
+    print "  ... CMD:", cmd
+    print "  ... mixing voices"
+    os.system(cmd)
+  
+  print "  ... generating audio file"
+  if v == 1:
+    samp2wav("tmp0.samp", wavFile)
+  else:
+    samp2wav(mixfile, wavFile)
   
   if CLEANUP == ON:
-    cmd = catList( ["rm", quadFile, ";", "rm", sampFile] )
+    cmd = "rm tmp*.quad tmp*.samp"
     os.system(cmd)
 
 ################################################################################
@@ -760,8 +840,8 @@ elif sys.argv[1] == "-f":
   data = file2string(file)
   # Clean up the input data
   data = preprocess(data)
-  data = data.replace("\n", " ")
-  data = data.split(" ")
+  # data = data.replace("\n", " ")
+  # data = data.split(" ")
   data = filter( lambda x: len(x), data )
   # Run program and store output in file
   run(data, file)
@@ -770,9 +850,9 @@ else:
   file = sys.argv[1]
   data = sys.argv[2]
   data = preprocess(data)
-  data = data.split(" ")
+  # data = data.split(" ")
   # Run program and store output in file
   run(data, file)
   exit(0)
   
-# X1-MASTER MERGED
+# VOICES
