@@ -1,11 +1,18 @@
 /******************
 
- File: mix2.c
+ File: mix.c  -- ten channel mixer
+ 
+ Usage: mix a.samp b.samp c.samp out.samp
+ The files a.samp b.samp, c.samp are mixed,  
+ the output is written to out.samp
 
  Purpose: Merge two audio sample files into one
  -- by adding values
 
 *************/
+
+#define MAXCHANELS 10 // of mixer
+#define BUFFERSIZE 100
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,61 +36,66 @@ void stripnl(char *str) {
 
 int main(int argc, char **argv) {
 
-    FILE *infile1, *infile2, *outfile;
-    char line1[100], line2[100];
+    FILE *infile[MAXCHANELS], *outfile;
+    char line[MAXCHANELS][BUFFERSIZE];
+    char *result[MAXCHANELS];
     char *tok;
     char *cmd;
-    char *arg[10]; // array of arguments
+    char *arg[MAXCHANELS]; // array of arguments
+    int i;
 
-     // Open infile1.  If NULL is returned there was an error
-    if((infile1 = fopen(argv[1], "r")) == NULL) {
-      printf("Error Opening Input File 1.\n");
-      exit(1);
-    } 
-
-     // Open infile2.  If NULL is returned there was an error
-    if((infile2 = fopen(argv[2], "r")) == NULL) {
-      printf("Error Opening Input File 2.\n");
-      exit(1);
-    } 
-
-    // Open outfile.  If NULL is returned there was an error 
-    if((outfile = fopen(argv[3], "w")) == NULL) {
+    // Determine number of files to open -- 10 max
+    
+	int nFiles = argc - 2;
+	if (nFiles > 10) {
+		nFiles = 10;
+	}
+	
+	// Open the files or report error
+   	for (i = 0; i < nFiles; i++ ) {
+    	if(  (infile[i] = fopen(argv[i+1], "r")) == NULL) {
+      		printf("Error Opening Input File %d -- %s\n", i, argv[i+1]);
+      		exit(1);
+    	}
+	}
+    
+    printf("Files opened: %d\n", nFiles);
+    
+    // open outfile
+    if((outfile = fopen(argv[argc-1], "w")) == NULL) {
       printf("Error Opening Output File.\n");
       exit(1);
     } 
-
+    
+    // process each line of each file
     int scanning = 1;
     int lineCount = 0;
     while( scanning ) {
-
-     // Read a line from each input file:
-
-      char *result1 = fgets(line1, sizeof(line1), infile1);
-      char *result2 = fgets(line2, sizeof(line2), infile2);
-
-      if ((result1 != NULL) && (result2 != NULL)) {
-	scanning = 1;
-	lineCount++;
-      } else {
-	scanning = 0;
-      }
-
-      // Write one frame = pair of lines to output:
-
-      if ( scanning ) {
-	double samp1 = atof(line1);
-        double samp2 = atof(line2);
-        fprintf(outfile,"%.8lf\n",(samp1 + samp2)/4.0);
-      }
+    	for (i = 0; i < nFiles; i++ ) {
+    		char *result = fgets(line[i], sizeof(line[i]), infile[i]);
+    		if (result == NULL) {
+    			scanning = 0;
+    		}  // if
+    	} // for
+    	if (scanning == 1) {
+    		lineCount++;
+    		double amplitude = 0.0;
+    		for(i = 0; i < nFiles; i++) {
+    			double sample = atof(line[i]);
+    			amplitude +=sample;;
+    		} //for
+    		amplitude = amplitude/nFiles;
+        	fprintf(outfile,"%.8lf\n",amplitude);
+    	} // if
+    
+    } // while
+    printf("Lines processed: %d\n", lineCount);    
+    // close the files
+    for(i = 0; i < nFiles; i++) {
+    	fclose(infile[i]);
     }
-  
-  // Close the files
-  fclose(infile1); 
-  fclose(infile2); 
-  fclose(outfile);
-
-  printf("line count = %d\n", lineCount);
+    fclose(outfile);
+   
 }
 
-// X1
+// VOICES
