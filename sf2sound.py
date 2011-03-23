@@ -679,13 +679,17 @@ def run(data, fileName):
   
   print "Parsing ..."
   data = stripComments(data)
+  
   print "Generating tuples ..."
   quadruples =  solfa2quad(data)
   string2file( quadruples, quadFile)
+  
   print "Generating waveform ..."
   quad2samp(quadFile, sampFile)
+  
   print "Generating audio file ..."
   samp2wav(sampFile, wavFile)
+  
   if CLEANUP == ON:
     cmd = catList( ["rm", quadFile, ";", "rm", sampFile] )
     os.system(cmd)
