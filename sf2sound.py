@@ -192,7 +192,6 @@ def padString(s,n):
     s = s+" "
   return s
 
-
 def isWhiteSpace(S):
   result = True
   for c	in S:
@@ -233,7 +232,6 @@ def preprocess(input):
   input = input.replace(" . ", " ")
   return input
   
-  
 def countString(s, t):
   # number of occurences of s in t                                               
   k = t.find(s)
@@ -242,7 +240,6 @@ def countString(s, t):
     return 1 + countString(s, t[b:])
   else:
     return 0
-  
   
 def getChunk(str, start_tag, end_tag):
   """                                                                                         
@@ -336,7 +333,14 @@ def parseNote(token):
     result = False
   # print "parse("+`token`+") =", root, suffix, result
   return root, suffix, result
-
+  
+def theNotes(tokenList):
+  output = ""
+  for token in tokenList:
+    root, suffix, result = parseNote(token)
+    if result:
+      output += `root` + " "
+  return output
 #####################################################
 #                @Pitch
 ####################################################
@@ -722,9 +726,19 @@ def getVoices(data):
 
   # return list
   return voices
-  
-  
+   
   print voices
+
+def executePreamble(data):
+  k = data.find("voice:")
+  if k < 0:
+    return data
+  else:
+    preamble = data[:k]
+    print preamble
+    return data[k:]
+    
+
 
 def run(data, fileName):
 
@@ -737,12 +751,14 @@ def run(data, fileName):
   data = data.replace("\n", " ")
   data = stripComments(data)
   
+  # data = executePreamble(data)
+  
   voices = getVoices(data)
   print voices
   
   v = 0
   waveformFiles = [ ]
-  global duratins
+  global durations
   durations = [ ]
   for voice in voices:
     print "VOICE "+`v+1`+":"
@@ -844,10 +860,7 @@ elif len(sys.argv) == 2:
 elif sys.argv[1] == "-f":
   file = sys.argv[2]
   data = file2string(file)
-  # Clean up the input data
   data = preprocess(data)
-  # data = data.replace("\n", " ")
-  # data = data.split(" ")
   data = filter( lambda x: len(x), data )
   # Run program and store output in file
   run(data, file)
@@ -856,8 +869,6 @@ else:
   file = sys.argv[1]
   data = sys.argv[2]
   data = preprocess(data)
-  # data = data.split(" ")
-  # Run program and store output in file
   run(data, file)
   exit(0)
   
