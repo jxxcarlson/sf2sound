@@ -101,7 +101,6 @@ maximumAmplitude = 0.0
 # frequency?
 # phrase ending: boolean
 
-
 notesEmitted = 0
 
 # These are initialized later:
