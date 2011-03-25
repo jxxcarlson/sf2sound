@@ -26,9 +26,7 @@ class SFM(object):
   def __init__(self):
     self.note = Note()
     self.rhythm = Rhythm()
-    print "--------------------------"
-    print "OP?", self.rhythm.isRhythmOp("q")
-    print "__________________________"
+    self.dynamics = Dynamics()
   
   def beatDuration(self):
     return 60.0/self.tempo;
@@ -70,6 +68,9 @@ class SFM(object):
         if self.rhythm.isArticulationOp(cmd):
           self.decay = self.rhythm.decay[cmd]
 
-  
+        # if cmd is a dynamics command, change value of the amplitude register
+        if self.dynamics.isDynamicsOp(cmd):
+          self.amplitude = self.dynamics.value[cmd]
+
  
 
