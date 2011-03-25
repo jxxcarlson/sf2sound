@@ -20,7 +20,6 @@ class Dynamics(object):
     
     
   def isDynamicsOp(self, token):
-    print "DYNAMICS token:", token
     if token in self.value.keys():
       return True
     else:

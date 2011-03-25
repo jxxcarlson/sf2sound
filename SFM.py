@@ -9,18 +9,16 @@ class SFM(object):
   # registers
   tempo = 60
   transpositionSemitones = 0
+  totalDuration = 0.0
 
   # registers for tuples
   duration = 1.0/tempo
   amplitude = 1.0
   decay = 1.0
   
-
   # I/O
   input = ""
   
-  #########################################################
-  # METHODS
   #########################################################
   
   def __init__(self):
@@ -28,9 +26,6 @@ class SFM(object):
     self.rhythm = Rhythm()
     self.dynamics = Dynamics()
   
-  def beatDuration(self):
-    return 60.0/self.tempo;
-
   def parseToken(self, token):
     global COMMAND_TYPE, OP_TYPE
     type = 0
@@ -50,6 +45,7 @@ class SFM(object):
       if self.note.isNote(token):
         freq = self.note.freq(token, self.transpositionSemitones)
         print "tuple["+token+"]:", self.tuple(freq)
+        self.totalDuration += self.duration
       else:
         ops = token.split(":")
         ops = filter(lambda x: len(x) > 0, ops)
