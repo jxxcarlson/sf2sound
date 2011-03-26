@@ -55,6 +55,8 @@ class SFM(object):
         print "tuple["+token+"]:", self.tuple(freq)
         self.totalDuration += self.duration
         self.currentBeat += self.currentBeatValue
+        if self.amplitude > self.maximumAmplitude:
+          self.maximumAmplitude = self.amplitude
       else:
         ops = token.split(":")
         ops = filter(lambda x: len(x) > 0, ops)
