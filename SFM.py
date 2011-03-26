@@ -9,7 +9,15 @@ class SFM(object):
   # registers
   tempo = 60
   transpositionSemitones = 0
+  currentBeatValue = 0
+  currentBeat = 0
   totalDuration = 0.0
+  
+  # dynamics
+  crescendoSpeed = 1.1
+  currentCrescendoSpeed = crescendoSpeed
+  crescendoBeatsRemaining = 0.0
+  maximumAmplitude = 0.0
 
   # registers for tuples
   duration = 1.0/tempo
@@ -46,6 +54,7 @@ class SFM(object):
         freq = self.note.freq(token, self.transpositionSemitones)
         print "tuple["+token+"]:", self.tuple(freq)
         self.totalDuration += self.duration
+        self.currentBeat += self.currentBeatValue
       else:
         ops = token.split(":")
         ops = filter(lambda x: len(x) > 0, ops)
@@ -54,7 +63,7 @@ class SFM(object):
         
         # if cmd is a rhythm symbol, change value of duration register
         if self.rhythm.isRhythmOp(cmd):
-          self.duration = self.rhythm.timeValue(cmd, self.tempo)
+          self.currentBeatValue, self.duration = self.rhythm.value(cmd, self.tempo) 
     
         # if cmd is a tempo command, change value of the tempo register
         if self.rhythm.isTempoOp(cmd):

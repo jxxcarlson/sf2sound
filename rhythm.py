@@ -4,13 +4,13 @@ class Rhythm(object):
   
   def __init__(self):
   
-    self.value = { }
-    self.value["s"] = 1.0/4
-    self.value["t"] = 1.0/3
-    self.value["e"] = 1.0/2
-    self.value["q"] = 1.0
-    self.value["h"] = 2.0
-    self.value["w"] = 4.0
+    self.beatValue = { }
+    self.beatValue["s"] = 1.0/4
+    self.beatValue["t"] = 1.0/3
+    self.beatValue["e"] = 1.0/2
+    self.beatValue["q"] = 1.0
+    self.beatValue["h"] = 2.0
+    self.beatValue["w"] = 4.0
     
     self.tempo = { }
     self.tempo["largo"] = 48
@@ -30,7 +30,7 @@ class Rhythm(object):
 
     
   def isRhythmOp(self, token):
-    if alphaPrefix(token) in self.value.keys():
+    if alphaPrefix(token) in self.beatValue.keys():
       return True
     else:
       return False
@@ -47,7 +47,8 @@ class Rhythm(object):
     else:
       return False
       
-  def timeValue(self, token, tempo):
+  def value(self, token, tempo):
     duration = 1.0/tempo
-    duration = duration*self.value[token]
-    return duration
+    beatValue = self.beatValue[token]
+    duration = duration*beatValue
+    return beatValue, duration
