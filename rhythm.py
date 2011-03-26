@@ -27,6 +27,8 @@ class Rhythm(object):
     self.decay["leg"] = 1.0
     self.decay["staccato"] = 0.5
     self.decay["stacc"] = 0.5
+    
+    self.breath = 0.3
 
     
   def isRhythmOp(self, token):

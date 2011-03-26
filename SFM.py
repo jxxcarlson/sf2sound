@@ -33,16 +33,10 @@ class SFM(object):
     self.note = Note()
     self.rhythm = Rhythm()
     self.dynamics = Dynamics()
-  
-  def parseToken(self, token):
-    global COMMAND_TYPE, OP_TYPE
-    type = 0
-    op = token
-    return type, op
-    
-  def tuple(self, freq):
+      
+  def tuple(self, freq, duration):
     output = `freq`
-    output += " "+`self.duration`
+    output += " "+`duration`
     output += " "+`self.amplitude`
     output += " "+`self.decay`
     return output
@@ -54,8 +48,13 @@ class SFM(object):
         if self.crescendoBeatsRemaining > 0:
           self.amplitude = self.amplitude*self.currentCrescendoSpeed
           self.crescendoBeatsRemaining -= self.currentBeatValue
-        freq = self.note.freq(token, self.transpositionSemitones)
-        print "tuple["+token+"]:", self.tuple(freq)
+        freq, root, suffix = self.note.freq(token, self.transpositionSemitones)
+        if suffix.find(",") > -1:
+          thisDuration = self.duration*(1 - self.rhythm.breath)
+          print "tuple["+token+"]:", self.tuple(freq, thisDuration)
+          print "tuple[breath]:", self.tuple(0, self.duration - thisDuration)
+        else:
+          print "tuple["+token+"]:", self.tuple(freq, self.duration)
         
         # summary data
         self.totalDuration += self.duration

@@ -99,7 +99,7 @@ class Note(object):
       for i in range(0,-n):
         f = f/self.semitoneFactor
         
-    return f
+    return f, root, suffix
 
   # print dictionary
   
