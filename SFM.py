@@ -51,12 +51,18 @@ class SFM(object):
     tokens = self.input.split(" ")
     for token in tokens:
       if self.note.isNote(token):
+        if self.crescendoBeatsRemaining > 0:
+          self.amplitude = self.amplitude*self.currentCrescendoSpeed
+          self.crescendoBeatsRemaining -= self.currentBeatValue
         freq = self.note.freq(token, self.transpositionSemitones)
         print "tuple["+token+"]:", self.tuple(freq)
+        
+        # summary data
         self.totalDuration += self.duration
         self.currentBeat += self.currentBeatValue
         if self.amplitude > self.maximumAmplitude:
           self.maximumAmplitude = self.amplitude
+          
       else:
         ops = token.split(":")
         ops = filter(lambda x: len(x) > 0, ops)
@@ -76,8 +82,14 @@ class SFM(object):
           self.decay = self.rhythm.decay[cmd]
 
         # if cmd is a dynamics command, change value of the amplitude register
-        if self.dynamics.isDynamicsOp(cmd):
+        if self.dynamics.isDynamicsConstant(cmd):
           self.amplitude = self.dynamics.value[cmd]
+        if cmd == "crescendo" or cmd == "cresc":
+          self.crescendoBeatsRemaining = float(ops[1])
+          self.currentCrescendoSpeed = self.crescendoSpeed
+        if cmd == "decrescendo" or cmd == "decresc":
+          self.crescendoBeatsRemaining = float(ops[1])
+          self.currentCrescendoSpeed = 1.0/self.crescendoSpeed
 
  
 

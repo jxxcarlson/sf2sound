@@ -19,7 +19,7 @@ class Dynamics(object):
     self.value["pp"] = 0.15
     
     
-  def isDynamicsOp(self, token):
+  def isDynamicsConstant(self, token):
     if token in self.value.keys():
       return True
     else:
