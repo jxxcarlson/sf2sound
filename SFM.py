@@ -84,64 +84,70 @@ class SFM(object):
    
   def updateRhythm(self, cmd):
     self.currentBeatValue, self.duration = self.rhythm.value(cmd, self)
-      
-  # tuples: returns a string of tuples from input = solfa text
+
+  def emitNote(self, token):
+	if self.crescendoBeatsRemaining > 0:
+	  self.amplitude = self.amplitude*self.currentCrescendoSpeed
+	  self.crescendoBeatsRemaining -= self.currentBeatValue
+	freq, root, suffix = self.note.freq(token, self.transpositionSemitones)
+	self.output += self.tuple(freq, root, suffix) + "\n"
+	
+	# summary data
+	self.totalDuration += self.duration
+	self.currentBeat += self.currentBeatValue
+	if self.amplitude > self.maximumAmplitude:
+	  self.maximumAmplitude = self.amplitude
+
+  def executeCommand(self, ops): 
   
+  	cmd = ops[0]
+  	
+	# if cmd is a rhythm symbol, change value of duration register
+	if self.rhythm.isRhythmOp(cmd):
+	  self.updateRhythm(cmd)
+	  # self.currentBeatValue, self.duration = self.rhythm.value(cmd, self.tempo)
+	if cmd == "tempo":
+	  self.tempo = float(ops[1])
+	  self.updateRhythm(cmd)
+
+	# if cmd is a tempo command, change value of the tempo register
+	if self.rhythm.isTempoOp(cmd):
+	  self.tempo = self.rhythm.tempo[cmd]
+	  self.updateRhythm(cmd)
+
+	# if cmd is an articulation command, change value of the decay register
+	if self.rhythm.isArticulationOp(cmd):
+	  self.decay = self.rhythm.decay[cmd]
+
+	# if cmd is a dynamics command, change value of the amplitude register
+	if self.dynamics.isDynamicsConstant(cmd):
+	  self.amplitude = self.dynamics.value[cmd]
+	  
+	# crescendo and decrescendo
+	if cmd == "crescendo" or cmd == "cresc":
+	  self.crescendoBeatsRemaining = float(ops[1])
+	  self.currentCrescendoSpeed = self.crescendoSpeed
+	if cmd == "decrescendo" or cmd == "decresc":
+	  self.crescendoBeatsRemaining = float(ops[1])
+	  self.currentCrescendoSpeed = 1.0/self.crescendoSpeed
+
+  # tuples: returns a string of tuples from input = solfa text
   def tuples(self):
+  
     tokens = self.input.split(" ")
-    output = ""
+    self.output = ""
+    
     for token in tokens:
       if self.note.isNote(token):
-        if self.crescendoBeatsRemaining > 0:
-          self.amplitude = self.amplitude*self.currentCrescendoSpeed
-          self.crescendoBeatsRemaining -= self.currentBeatValue
-        freq, root, suffix = self.note.freq(token, self.transpositionSemitones)
-        output += self.tuple(freq, root, suffix) + "\n"
-        
-        # summary data
-        self.totalDuration += self.duration
-        self.currentBeat += self.currentBeatValue
-        if self.amplitude > self.maximumAmplitude:
-          self.maximumAmplitude = self.amplitude
-          
+    	self.emitNote(token) 
       else:
         ops = token.split(":")
         ops = filter(lambda x: len(x) > 0, ops)
         if DEBUG == ON:
-          output += "cmd: "+ `ops`+"\n"
-        cmd = ops[0]
-        
-        # if cmd is a rhythm symbol, change value of duration register
-        if self.rhythm.isRhythmOp(cmd):
-          self.updateRhythm(cmd)
-          # self.currentBeatValue, self.duration = self.rhythm.value(cmd, self.tempo)
-        if cmd == "tempo":
-          output += "TEMPO: "+`float(ops[1])`+"\n"
-          self.tempo = float(ops[1])
-          self.updateRhythm(cmd)
-    
-        # if cmd is a tempo command, change value of the tempo register
-        if self.rhythm.isTempoOp(cmd):
-          self.tempo = self.rhythm.tempo[cmd]
-          self.updateRhythm(cmd)
-    
-        # if cmd is an articulation command, change value of the decay register
-        if self.rhythm.isArticulationOp(cmd):
-          self.decay = self.rhythm.decay[cmd]
-
-        # if cmd is a dynamics command, change value of the amplitude register
-        if self.dynamics.isDynamicsConstant(cmd):
-          self.amplitude = self.dynamics.value[cmd]
+          self.output += "cmd: "+ `ops`+"\n"
+        self.executeCommand(ops)
           
-        # crescendo and decrescendo
-        if cmd == "crescendo" or cmd == "cresc":
-          self.crescendoBeatsRemaining = float(ops[1])
-          self.currentCrescendoSpeed = self.crescendoSpeed
-        if cmd == "decrescendo" or cmd == "decresc":
-          self.crescendoBeatsRemaining = float(ops[1])
-          self.currentCrescendoSpeed = 1.0/self.crescendoSpeed
-          
-    return output
+    return self.output
 
  
 

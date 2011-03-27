@@ -49,13 +49,17 @@ class Rhythm(object):
     else:
       return False
       
+      
+  # return beatValue and duration based
+  # on value of token and current state of 
+  # SFM object S
   def value(self, token, S):
     duration = 1.0/S.tempo
     if token in self.beatValue.keys():
       beatValue = self.beatValue[token]
     else:
       beatValue = S.currentBeatValue
-    # print "TEMPO:", S.tempo, "beatValue:", beatValue, "duration:", duration
     duration = duration*beatValue
-    # print "DURATION:", duration
     return beatValue, duration
+    
+    

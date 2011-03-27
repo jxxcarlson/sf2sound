@@ -102,8 +102,6 @@ class Note(object):
     return f, root, suffix
 
   # print dictionary
-  
-  
   def printNoteFreq():
     j = 0
     for N in note:
