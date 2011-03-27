@@ -105,14 +105,13 @@ class SFM(object):
 	# if cmd is a rhythm symbol, change value of duration register
 	if self.rhythm.isRhythmOp(cmd):
 	  self.updateRhythm(cmd)
-	  # self.currentBeatValue, self.duration = self.rhythm.value(cmd, self.tempo)
-	if cmd == "tempo":
-	  self.tempo = float(ops[1])
-	  self.updateRhythm(cmd)
 
 	# if cmd is a tempo command, change value of the tempo register
 	if self.rhythm.isTempoOp(cmd):
 	  self.tempo = self.rhythm.tempo[cmd]
+	  self.updateRhythm(cmd)
+	if cmd == "tempo":
+	  self.tempo = float(ops[1])
 	  self.updateRhythm(cmd)
 
 	# if cmd is an articulation command, change value of the decay register
