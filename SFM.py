@@ -20,6 +20,10 @@
 #
 ##########################################################
 
+ON = 1
+OFF = 0
+DEBUG = OFF
+
 import math
 from parse import splitToken
 from note import Note
@@ -77,8 +81,12 @@ class SFM(object):
     else:
           output = self._tuple(freq, self.duration)
     return output
-    
+   
+  def updateRhythm(self, cmd):
+    self.currentBeatValue, self.duration = self.rhythm.value(cmd, self)
+      
   # tuples: returns a string of tuples from input = solfa text
+  
   def tuples(self):
     tokens = self.input.split(" ")
     output = ""
@@ -99,16 +107,23 @@ class SFM(object):
       else:
         ops = token.split(":")
         ops = filter(lambda x: len(x) > 0, ops)
-        # print "cmd:", ops
+        if DEBUG == ON:
+          output += "cmd: "+ `ops`+"\n"
         cmd = ops[0]
         
         # if cmd is a rhythm symbol, change value of duration register
         if self.rhythm.isRhythmOp(cmd):
-          self.currentBeatValue, self.duration = self.rhythm.value(cmd, self.tempo)
+          self.updateRhythm(cmd)
+          # self.currentBeatValue, self.duration = self.rhythm.value(cmd, self.tempo)
+        if cmd == "tempo":
+          output += "TEMPO: "+`float(ops[1])`+"\n"
+          self.tempo = float(ops[1])
+          self.updateRhythm(cmd)
     
         # if cmd is a tempo command, change value of the tempo register
         if self.rhythm.isTempoOp(cmd):
           self.tempo = self.rhythm.tempo[cmd]
+          self.updateRhythm(cmd)
     
         # if cmd is an articulation command, change value of the decay register
         if self.rhythm.isArticulationOp(cmd):
