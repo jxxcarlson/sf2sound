@@ -133,7 +133,11 @@ class SFM(object):
   # tuples: returns a string of tuples from input = solfa text
   def tuples(self):
   
+    # split intput into list of tokens
     tokens = self.input.split(" ")
+    # make sure there are not empty list elements
+    tokens = filter( lambda x: len(x), tokens)
+    # initialize output
     self.output = ""
     
     for token in tokens:

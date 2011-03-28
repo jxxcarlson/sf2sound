@@ -18,7 +18,7 @@ RECORDING_LEVEL = 0.5
 ON = 1
 OFF = 0
 
-CLEANUP = OFF
+CLEANUP = ON
 DEBUG = OFF
 
 
@@ -176,5 +176,4 @@ def run(input, fileName):
     
   print
   
-print "nargs", len(sys.argv)
 run(sys.argv[1], sys.argv[2])
