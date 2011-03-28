@@ -55,7 +55,7 @@ class Rhythm(object):
   # SFM object S
   
   def value(self, token, S):
-    duration = 1.0/S.tempo
+    duration = 60.0/S.tempo
     if token in self.beatValue.keys():
       beatValue = self.beatValue[token]
     else:

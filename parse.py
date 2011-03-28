@@ -1,4 +1,4 @@
-
+import string
 
 def indexOfAlphaPrefix(token):
 
@@ -77,3 +77,13 @@ def count(c,s):
     if x == c:
       n = n + 1
   return n
+
+def getChunk(str, start_tag, end_tag):
+  """                                                                                         
+  Return the chunk of str that is delimited by start_tag and end_tag.                                                                  
+  """
+  a = string.find(str, start_tag)
+  b = string.find(str, end_tag)
+  result = str[a:b]
+  n = len(start_tag)
+  return string.strip(result[n:])
