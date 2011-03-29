@@ -36,19 +36,19 @@ class SFM(object):
   # tempo registers
   tempo = 60
   transpositionSemitones = 0
-  octaveNumber = 0
-  currentBeatValue = 0
+  octaveNumber = 3
+  currentBeatValue = 60.0/tempo
   currentBeat = 0
   totalDuration = 0.0
   
-  # dynamics registeres
+  # dynamics registers
   crescendoSpeed = 1.1
   currentCrescendoSpeed = crescendoSpeed
   crescendoBeatsRemaining = 0.0
   maximumAmplitude = 0.0
 
   # tuple registers
-  duration = 1.0/tempo
+  duration = 60.0/tempo
   amplitude = 1.0
   decay = 1.0
   
@@ -62,6 +62,10 @@ class SFM(object):
     self.note = Note()
     self.rhythm = Rhythm()
     self.dynamics = Dynamics()
+    # self.tempo = 60
+    # self.currentBeatValue = 60.0/self.tempo
+    # self.octaveNumber = 3
+    
 
   # return tuple as string given frequency,
   # duration, decay, and amplitude

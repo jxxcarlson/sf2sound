@@ -194,9 +194,15 @@ def run(input, fileName):
   
 if sys.argv[1] == "-f":
   input = file2string(sys.argv[2])
-  output = sys.argv[3]
+  if len(sys.argv) == 4:
+  	output = sys.argv[3]
+  else:
+  	output = "out"
 else:
   input = sys.argv[1]
-  output = sys.argv[2]
+  if len(sys.argv) == 3:
+  	output = sys.argv[2]
+  else:
+  	output = "out"
 
 run(input, output)
