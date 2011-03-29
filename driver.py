@@ -190,4 +190,11 @@ def run(input, fileName):
     
   print
   
-run(sys.argv[1], sys.argv[2])
+if sys.argv[1] == "-f":
+  input = file2string(sys.argv[2])
+  output = sys.argv[3]
+else:
+  input = sys.argv[1]
+  output = sys.argv[2]
+
+run(input, output)

@@ -26,7 +26,7 @@ case $1 in
 
   -test2)
 	echo
-        python sheco.py "sf2sound 'voice:1 tempo:60 octave:2 h mi re voice:2 tempo:60 octave:1 h do sol' output";;
+        python sheco.py "sf2sound 'voice:1 tempo:60 decay:2.0 octave:2 h mi re voice:2 tempo:60 decay:2.0 octave:1 h do sol' output";;
   
    *) echo "   Try one of these: sh $0 -install or sh $0 -test";;
 

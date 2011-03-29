@@ -10,6 +10,7 @@ class Note(object):
   CFreq_1 = middleCFreq/2  # 130.81278265029934 Hertz
   CFreq_2 = CFreq_1/2      #  65.40639132514967 Hertz
   CFreq_3 = CFreq_2/2      #  32.70319566257484 Hertz
+  CFreq_4 = CFreq_3/2      #  16.351597831287421 Hertz
 
   alternateNoteDict = { }
 
@@ -17,7 +18,7 @@ class Note(object):
     self.setNotes()
     self.setAlternateNoteDict()
     self.accents = ['+', '-', ',', '.', '_', '^']
-    self.setFrequencyDictionary(self.CFreq_3)
+    self.setFrequencyDictionary(self.CFreq_4)
      
   def setNotes(self):
   # List of note names
