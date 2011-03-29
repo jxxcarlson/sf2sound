@@ -82,6 +82,7 @@ def quad2samp (inputFile, outputFile):
   # a *.quad file
 
   cmd = catList([QUAD2SAMP, inputFile, outputFile, ">tmp-val"])
+  # cmd = catList([QUAD2SAMP, inputFile, outputFile])
   os.system(cmd)
   value = getChunk(file2string("tmp-val"), "<maximumAmplitude>", "</maximumAmplitude>")
   maximumAmplitude = float(value);
@@ -116,7 +117,8 @@ def processVoice(voice, voiceProcessed):
   S = SFM()
   S.input = voice
   quadruples = S.tuples()
-  header = "@attack:0.02\n@release:0.04\n@harmonics:1.0:0.5:0.25:0.125\n"
+  header = "@attack:0.02\n@release:0.04\n@harmonics:1.0\n"
+  # header = "@attack:0.02\n@release:0.04\n@harmonics:1.0:0.5:0.25:0.125\n"
   quadruples = header+quadruples
   print "Voice "+`voiceProcessed+1`+":", S.totalDuration, S.currentBeat, S.maximumAmplitude
   durations.append(S.totalDuration)

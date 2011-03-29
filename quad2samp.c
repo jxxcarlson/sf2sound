@@ -90,10 +90,9 @@ int main(int argc, char **argv) {
   
    phase = 0; // global phase -- runs from start to finish of waveform
    while( fgets(line, sizeof(line), infile) != NULL ) {
-   
      // Get each line from the infile 
      if (line[0] == '@') {
-     
+        // printf("SPECIAL: %s\n", line);
         // parse:
      	tok = strtok(line, ":\n"); cmd = tok;
      	
@@ -101,33 +100,36 @@ int main(int argc, char **argv) {
      	if (strcmp(cmd,"@attack") == 0) {
      	  arg[0] = strtok(NULL, ":\n");
      	  ATTACK = atof(arg[0]);
-     	  printf("ATTACK: %.4f\n", ATTACK);
+     	  // printf("ATTACK: %.4f\n", ATTACK);
      	}
      	
      	if (strcmp(cmd,"@release") == 0) {
      	  arg[0] = strtok(NULL, ":\n");
      	  RELEASE = atof(arg[0]);
-     	  printf("RELEASE: %.4f\n", RELEASE);
+     	  // printf("RELEASE: %.4f\n", RELEASE);
      	}
      	
      	if (strcmp(cmd,"@harmonics") == 0) {
-     	    
+     	    // printf("@harmonics ... scanning\n");
      	  	int scanning = 1;
      	  	nHarmonics = 0;
      	  	while( scanning ){
-     	    	tok = strtok(NULL, ":");
+     	    	tok = strtok(NULL, ":\n");
      	    	if (tok == NULL) {
      	      		scanning = 0;
      	     	} else {
      	    		harmonicAmplitude[nHarmonics] = atof(tok);
+     	    		// printf("%d: %s, %.4f\n", nHarmonics, tok, harmonicAmplitude[nHarmonics]);
      	    		nHarmonics++;
      	    	} // else
      	  	} // while
-     	  	printf("harmonics:\n");
+     	  	// printf("harmonics:\n");
      	  	int i;
+     	  	
      	  	for (i = 0; i < nHarmonics; i++) {
      	  		printf("   %d: %.4f\n", i, harmonicAmplitude[i]);
      	  	}
+     	  	
      	} // if (strcmp(cmd,"@harmonics") == 0) 
      } else { // if line[0] != '@'
 		
@@ -179,8 +181,9 @@ int main(int argc, char **argv) {
 			
 			// Form the sine wave and add harmonics to it
 			int k;
-			for (k = 0; k < nHarmonics; k++) {
-			 	samp = harmonicAmplitude[k]*sin(W*(k+1)*phase);
+			samp = harmonicAmplitude[0]*sin(W*phase);
+			for (k = 1; k < nHarmonics; k++) {
+			 	samp += harmonicAmplitude[k]*sin(W*(k+1)*phase);
 			}
 			// Shape the wave
 			samp *= A;
@@ -189,7 +192,8 @@ int main(int argc, char **argv) {
 			}
 			
 			// Write the sample to file      
-			fprintf(outfile,"%.8lf\n",samp);		
+			fprintf(outfile,"%.8lf\n",samp);
+			
 		 }
 	 }
 	 

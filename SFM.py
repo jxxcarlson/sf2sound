@@ -29,6 +29,7 @@ from parse import splitToken
 from note import Note
 from rhythm import Rhythm
 from dynamics import Dynamics
+from stringUtil import * # catList, catList2
 
 class SFM(object):
 
@@ -134,6 +135,13 @@ class SFM(object):
     # pitch transposition
 	if cmd == "octave":
 		self.octaveNumber = int(ops[1])
+		
+	# pass special commands through	
+	if cmd[0] == '@':
+	  CMD = catList2(ops)
+	  CMD = CMD[:len(CMD)]+"\n"
+	  self.output += CMD
+	
       
   # tuples: returns a string of tuples from input = solfa text
   def tuples(self):
