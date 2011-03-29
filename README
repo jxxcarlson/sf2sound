@@ -6,8 +6,23 @@ for creating sound files from text such as
 This is a collabarative project:
 
   James Carlson, Hakon Hallgrimur
-  
---------------
+
+-------------
+NOTE:  We have posted a new version of sf2sound
+which has a much more modular structure.  It is
+not quite up to date with the previous version.
+
+To install version 1, use sh install1.sh.
+To install version 2, use 
+
+  sh install2.sh -install
+
+For tests and examples of version 2, use
+
+  sh instals2.sh -test
+  sh install2.sh -test2
+
+  --------------
 Example 1. (input from command line)
 
 	% /.solfa2sf phrase '|| q do re . e mi re do re | mi x fa x h sol ||' 
