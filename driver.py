@@ -13,6 +13,7 @@ TEXT2SF = "~/Dropbox/bin/text2sf"
 QUAD2SAMP = "~/Dropbox/bin/quad2samp"
 
 # recording level 1.0 creates obnoxious distortion
+maximumAmplitude = 0.0
 RECORDING_LEVEL = 1.0 
 
 ON = 1
@@ -80,8 +81,13 @@ def quad2samp (inputFile, outputFile):
   # to create a wave sample file from
   # a *.quad file
 
-  cmd = catList([QUAD2SAMP, inputFile, outputFile])
+  cmd = catList([QUAD2SAMP, inputFile, outputFile, ">tmp-val"])
   os.system(cmd)
+  value = getChunk(file2string("tmp-val"), "<maximumAmplitude>", "</maximumAmplitude>")
+  maximumAmplitude = float(value);
+  print "quad2samp, maximum amplitude:", maximumAmplitude
+  return maximumAmplitude
+
 
 def samp2wav(inputFile, outputFile):
   
@@ -91,19 +97,19 @@ def samp2wav(inputFile, outputFile):
   #
   # to generate a .wav from a .samp fiie
 
-  maximumAmplitude = 2.0  # @@FIX
+  global maximumAmplitude
   recording_level = RECORDING_LEVEL/maximumAmplitude
   print "maximum amplitude:", maximumAmplitude
   print "recording level:", recording_level
   
-  cmd = cmd = catList([TEXT2SF, inputFile, outputFile, "44100", "1", `recording_level`])
+  cmd = catList([TEXT2SF, inputFile, outputFile, "44100", "1", `recording_level`])
   os.system(cmd)
   
 ###########################################
 
 def processVoice(voice, voiceProcessed):
 
-  global waveformFiles
+  global waveformFiles, maximumAmplitude
 
   # write quadfile
   voice = voice.strip()
@@ -120,10 +126,10 @@ def processVoice(voice, voiceProcessed):
 	
   # write wavform file
   sampfile = file+".samp"
-  quad2samp(quadfile, sampfile)
+  maximumAmplitude = quad2samp(quadfile, sampfile)
   waveformFiles.append(sampfile)
 	
-  # print "Durations:", durations
+  return maximumAmplitude
 
 
 def run(input, fileName):
@@ -153,15 +159,21 @@ def run(input, fileName):
   
   # process Voices
   for voice in voices:
-    processVoice(voice, voiceProcessed)
+    global maximumAmplitude
+    thisMaximumAmplitude = processVoice(voice, voiceProcessed)
+    if thisMaximumAmplitude > maximumAmplitude:
+      maximumAmplitude = thisMaximumAmplitude
     voiceProcessed = voiceProcessed + 1
   
   # mix waveform files if necessary
   if voiceProcessed > 1:
     print "Mixing ..."
     mixfile = "tmp-mix.samp"
-    cmd = catList(["mix"] + waveformFiles + [mixfile]) 
+    cmd = catList(["mix"] + waveformFiles + [mixfile, "> tmp-val"]) 
     os.system(cmd)
+    value = getChunk(file2string("tmp-val"), "<maximumAmplitude>", "</maximumAmplitude>")
+    maximumAmplitude = float(value)
+    print "mix, maximum amplitude:", maximumAmplitude
   
   # generate waveform file
   print "generating audio file ..."
@@ -169,6 +181,8 @@ def run(input, fileName):
     samp2wav("tmp0.samp", wavFile)
   else:
     samp2wav(mixfile, wavFile)
+    
+  print "run, maximum amplitude:", maximumAmplitude
   
   if CLEANUP == ON:
     cmd = "rm tmp*.quad tmp*.samp"

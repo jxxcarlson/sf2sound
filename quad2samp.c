@@ -184,17 +184,21 @@ int main(int argc, char **argv) {
 			}
 			// Shape the wave
 			samp *= A;
+			if (samp > maxsamp) {
+				maxsamp = samp;
+			}
 			
-	
 			// Write the sample to file      
 			fprintf(outfile,"%.8lf\n",samp);		
 		 }
 	 }
+	 
   }
   
   // Close the files
   fclose(infile); 
   fclose(outfile);
+  printf("<maximumAmplitude>%.4f</maximumAmplitude>\n", maxsamp);
 }
 
 // X1

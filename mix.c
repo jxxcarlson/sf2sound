@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
     	fclose(infile[i]);
     }
     fclose(outfile);
-    printf("mix, maximum amplitude: %.2f\n", maxAmplitude);
+    printf("<maximumAmplitude>%.4f</maximumAmplitude>\n", maxAmplitude);
    
 }
 
