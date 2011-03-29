@@ -17,7 +17,7 @@
   for more sustained sound, smaller for more percussive sound),
   and 0.2 is the amplitude (larger = louder, smaller = quieter).
 
-  2. Complie this file:
+  2. Compile this file:
 
     % gcc quad2samp.c -o quad2samp
 
@@ -32,52 +32,7 @@
   Here 44100 Hertz is the sample rate, 1 is the number
   of channels, and 0.90 is the gain.
 
-  Note the output to the terminal window:
-
-    TEXT2SF: convert text audio data to soundfile
-    copying....
-    Done. 132300 sample frames copied to foo.wav
-    PEAK information:
-    CH 1:0.8989 at 2.0006 secs
-
-  The program text2sf (See: "The Audio Programming Book",
-  Boulanger and Lazzarini, eds) has processed 132300 sample
-  frames, which checks: 3.0 seconds of sound x 44,100 sample
-  frames per second = 132,300 samples.
-
-  Note that foo.samp is a 1.4 MB file, while foo.wav is a 
-  260 K file.  So 0.47 MB/sec for foo.samp, 87 KB/sec for
-  foo.wav.
-
-
-  5.  Play the file:
-
-    % play foo.wav
-
-  (Mac: ) This command brings up the QuickTime player loaded with foo.wav.
-  Click the play button to listen to foo.wav.
-
- NOTE:  Since I am lazy, I usually package all of the above as follows:
-
- a.  Create a file m.sh with contents
-
-   gcc quad2samp.c -o quad2samp
-   ./quad2samp foo.quad foo.samp
-   text2sf foo.samp foo.wav 44100 1 .90
-   rm foo.samp
-   play foo.wav
-  
- b.  Make an alias:
-
-   % alias m 'sh m.sh'
-
- c.  Run the whole shebang:
-
-  % m
-
- Thus when experimenting, you have only to type a single character to 
- test the each step.
-
+ 
 *************/
 
 #include <stdlib.h>
@@ -107,6 +62,7 @@ int main(int argc, char **argv) {
     char *tok;
     char *cmd;
     char *arg[10]; // array of arguments
+    int nHarmonics;
     float harmonicAmplitude[8]; 
     float freq, dur, decay, amplitude;
     float ATTACK, RELEASE;
@@ -132,11 +88,6 @@ int main(int argc, char **argv) {
       exit(1);
     } 
   
-   /**
-   float ATTACK = atof(argv[3]);
-   float RELEASE = atof(argv[4]);
-   **/
-  
    phase = 0; // global phase -- runs from start to finish of waveform
    while( fgets(line, sizeof(line), infile) != NULL ) {
    
@@ -144,31 +95,41 @@ int main(int argc, char **argv) {
      if (line[0] == '@') {
      
         // parse:
-     	// printf("\nline:%s", line);
-     	tok = strtok(line, ":"); cmd = tok;
-     	arg[0] = tok = strtok(NULL, " ");
-     	arg[1] = tok = strtok(NULL, " ");
-     	arg[2] = tok = strtok(NULL, " ");
-     	arg[3] = tok = strtok(NULL, " ");
-     	// printf("Parsed: %s:%s:%s\n", cmd, arg[0], arg[1]);
+     	tok = strtok(line, ":\n"); cmd = tok;
      	
      	// execute
-     	// printf("Execute:\n");
      	if (strcmp(cmd,"@attack") == 0) {
+     	  arg[0] = strtok(NULL, ":\n");
      	  ATTACK = atof(arg[0]);
-     	  // printf("cmd = ATTACK:%.3f\n", ATTACK);
-     	}
-     	if (strcmp(cmd,"@release") == 0) {
-     	  RELEASE = atof(arg[0]);
-     	  // printf("cmd = RELEASE:%.3f\n", RELEASE);
-     	}
-     	if (strcmp(cmd,"@harmonics") == 0) {
-     	  printf("ha: %s  %s  %s  %s", arg[0], arg[1], arg[2], arg[3]);
-     	  // printf("cmd = FOO\n");
+     	  printf("ATTACK: %.4f\n", ATTACK);
      	}
      	
-     	// printf("\n");
-     } else {
+     	if (strcmp(cmd,"@release") == 0) {
+     	  arg[0] = strtok(NULL, ":\n");
+     	  RELEASE = atof(arg[0]);
+     	  printf("RELEASE: %.4f\n", RELEASE);
+     	}
+     	
+     	if (strcmp(cmd,"@harmonics") == 0) {
+     	    
+     	  	int scanning = 1;
+     	  	nHarmonics = 0;
+     	  	while( scanning ){
+     	    	tok = strtok(NULL, ":");
+     	    	if (tok == NULL) {
+     	      		scanning = 0;
+     	     	} else {
+     	    		harmonicAmplitude[nHarmonics] = atof(tok);
+     	    		nHarmonics++;
+     	    	} // else
+     	  	} // while
+     	  	printf("harmonics:\n");
+     	  	int i;
+     	  	for (i = 0; i < nHarmonics; i++) {
+     	  		printf("   %d: %.4f\n", i, harmonicAmplitude[i]);
+     	  	}
+     	} // if (strcmp(cmd,"@harmonics") == 0) 
+     } else { // if line[0] != '@'
 		
 		// Parse the line to recover the elements
 		// of tuple as floats
@@ -217,10 +178,10 @@ int main(int argc, char **argv) {
 			A = attackAmplitude*releaseAmplitude*dampingAmplitude*amplitude;
 			
 			// Form the sine wave and add harmonics to it
-			samp = sin(W*phase);
-			samp += -0.4*sin(2*W*phase);
-			samp += +0.2*sin(3*W*phase);
-			samp += -0.1*sin(4*W*phase);
+			int k;
+			for (k = 0; k < nHarmonics; k++) {
+			 	samp = harmonicAmplitude[k]*sin(W*(k+1)*phase);
+			}
 			// Shape the wave
 			samp *= A;
 			

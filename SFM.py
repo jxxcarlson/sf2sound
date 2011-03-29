@@ -133,7 +133,7 @@ class SFM(object):
 	  
     # pitch transposition
 	if cmd == "octave":
-		self.octaveNumber = float(ops[1])
+		self.octaveNumber = int(ops[1])
       
   # tuples: returns a string of tuples from input = solfa text
   def tuples(self):
