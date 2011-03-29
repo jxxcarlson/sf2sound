@@ -13,7 +13,7 @@ TEXT2SF = "~/Dropbox/bin/text2sf"
 QUAD2SAMP = "~/Dropbox/bin/quad2samp"
 
 # recording level 1.0 creates obnoxious distortion
-RECORDING_LEVEL = 0.5 
+RECORDING_LEVEL = 1.0 
 
 ON = 1
 OFF = 0

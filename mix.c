@@ -43,6 +43,7 @@ int main(int argc, char **argv) {
     char *cmd;
     char *arg[MAXCHANELS]; // array of arguments
     int i;
+    float maxAmplitude = 0.0;
 
     // Determine number of files to open -- 10 max
     
@@ -85,6 +86,9 @@ int main(int argc, char **argv) {
     			amplitude +=sample;;
     		} //for
     		amplitude = amplitude/nFiles;
+    		if (amplitude > maxAmplitude) {
+    			maxAmplitude = amplitude;
+    		}
         	fprintf(outfile,"%.8lf\n",amplitude);
     	} // if
     
@@ -95,6 +99,7 @@ int main(int argc, char **argv) {
     	fclose(infile[i]);
     }
     fclose(outfile);
+    printf("mix, maximum amplitude: %.2f\n", maxAmplitude);
    
 }
 
