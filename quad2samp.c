@@ -107,6 +107,7 @@ int main(int argc, char **argv) {
     char *tok;
     char *cmd;
     char *arg[10]; // array of arguments
+    float harmonicAmplitude[8]; 
     float freq, dur, decay, amplitude;
     float ATTACK, RELEASE;
 
@@ -147,6 +148,8 @@ int main(int argc, char **argv) {
      	tok = strtok(line, ":"); cmd = tok;
      	arg[0] = tok = strtok(NULL, " ");
      	arg[1] = tok = strtok(NULL, " ");
+     	arg[2] = tok = strtok(NULL, " ");
+     	arg[3] = tok = strtok(NULL, " ");
      	// printf("Parsed: %s:%s:%s\n", cmd, arg[0], arg[1]);
      	
      	// execute
@@ -159,7 +162,8 @@ int main(int argc, char **argv) {
      	  RELEASE = atof(arg[0]);
      	  // printf("cmd = RELEASE:%.3f\n", RELEASE);
      	}
-     	if (strcmp(cmd,"@foo") == 0) {
+     	if (strcmp(cmd,"@harmonics") == 0) {
+     	  printf("ha: %s  %s  %s  %s", arg[0], arg[1], arg[2], arg[3]);
      	  // printf("cmd = FOO\n");
      	}
      	

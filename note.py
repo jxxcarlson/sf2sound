@@ -60,7 +60,7 @@ class Note(object):
       freq = self.semitoneFactor*freq
     self.noteFreq["x"] = 0.0
 
-  def freq(self, token, nSemitoneShifts):
+  def freq(self, token, nSemitoneShifts, octaveNumber):
     # Return frequency of note defined by token
     
     # base calculation
@@ -68,6 +68,10 @@ class Note(object):
     a = alphaPrefix(root)
     a = self.normalizedNote(a)
     f = self.noteFreq[a]
+    
+    # apply octave number
+    for i in range(0, octaveNumber):
+      f = 2*f
     
     # apply transpose register
     factor = pow(self.semitoneFactor, nSemitoneShifts);

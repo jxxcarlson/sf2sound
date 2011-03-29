@@ -35,6 +35,7 @@ class SFM(object):
   # tempo registers
   tempo = 60
   transpositionSemitones = 0
+  octaveNumber = 0
   currentBeatValue = 0
   currentBeat = 0
   totalDuration = 0.0
@@ -89,7 +90,7 @@ class SFM(object):
 	if self.crescendoBeatsRemaining > 0:
 	  self.amplitude = self.amplitude*self.currentCrescendoSpeed
 	  self.crescendoBeatsRemaining -= self.currentBeatValue
-	freq, root, suffix = self.note.freq(token, self.transpositionSemitones)
+	freq, root, suffix = self.note.freq(token, self.transpositionSemitones, self.octaveNumber)
 	self.output += self.tuple(freq, root, suffix) + "\n"
 	
 	# summary data
@@ -129,7 +130,11 @@ class SFM(object):
 	if cmd == "decrescendo" or cmd == "decresc":
 	  self.crescendoBeatsRemaining = float(ops[1])
 	  self.currentCrescendoSpeed = 1.0/self.crescendoSpeed
-
+	  
+    # pitch transposition
+	if cmd == "octave":
+		self.octaveNumber = float(ops[1])
+      
   # tuples: returns a string of tuples from input = solfa text
   def tuples(self):
   
