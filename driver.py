@@ -14,7 +14,7 @@ QUAD2SAMP = "~/Dropbox/bin/quad2samp"
 
 # recording level 1.0 creates obnoxious distortion
 maximumAmplitude = 0.0
-RECORDING_LEVEL = 1.0 
+RECORDING_LEVEL = 0.8
 
 ON = 1
 OFF = 0
