@@ -19,8 +19,28 @@ To install version 2, use
 
 For tests and examples of version 2, use
 
-  sh instals2.sh -test
+  sh install2.sh -test
   sh install2.sh -test2
+
+The files required for version 2 are
+listed below.  The file driver.py
+is the "main" file.
+
+    	quad2samp.c
+	mix.c 
+
+        driver.py
+	sf2a.py
+	SFM.py
+
+	note.py
+	rhythm.py
+	dynamics.py
+
+	parse.py
+	comment.py
+	stringUtil.py
+
 
   --------------
 Example 1. (input from command line)
