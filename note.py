@@ -15,18 +15,28 @@ class Note(object):
 
   alternateNoteDict = { }
 
-  def __init__(self):
+  def __init__(self, NOTE_TABLE):
     self.ring = Ring()
-    self.setNotes()
+    self.setNotes(NOTE_TABLE)
     self.setAlternateNoteDict()
     self.accents = ['+', '-', ',', '.', '_', '^']
-    self.setFrequencyDictionary(self.CFreq_4)
+    self.setFrequencyDictionary(self.CFreq_4, NOTE_TABLE)
      
-  def setNotes(self):
+  def setNotes(self, NOTE_TABLE):
   # List of note names
-    self.notes = ["do", "di", "re", "ri", "mi", "fa", "fi", "sol", "si", "la", "li", "ti"]
+    if NOTE_TABLE == { }:
+      self.notes = ["do", "di", "re", "ri", "mi", "fa", "fi", "sol", "si", "la", "li", "ti"]
+    else:
+      self.notes = NOTE_TABLE.keys()
     self.ring.pushList(self.notes)
     
+  """
+  def setNotes(self, noteList):
+  # List of note names
+    self.notes = noteList
+    self.ring.pushList(self.notes)
+  """
+  
   # return unique numerical index for each note token
   def index(self, token):
   
@@ -108,13 +118,17 @@ class Note(object):
     else:
       return y+suffix
 
-  def setFrequencyDictionary(self, baseFrequency): 
-    self.noteFreq = {}
-    freq = baseFrequency
-    for j in range(0, len(self.notes)):
-      self.noteFreq[self.notes[j]] = freq
-      freq = self.semitoneFactor*freq
-    self.noteFreq["x"] = 0.0
+  def setFrequencyDictionary(self, baseFrequency, NOTE_TABLE):
+    if NOTE_TABLE == {}:
+      self.noteFreq = {}
+      freq = baseFrequency
+      for j in range(0, len(self.notes)):
+        self.noteFreq[self.notes[j]] = freq
+        freq = self.semitoneFactor*freq
+    else:
+      self.noteFreq = NOTE_TABLE
+      self.noteFreq["x"] = 0.0
+      
 
   def freq(self, token, nSemitoneShifts, octaveNumber):
     # Return frequency of note defined by token
@@ -131,7 +145,7 @@ class Note(object):
     
     # apply transpose register
     factor = pow(self.semitoneFactor, nSemitoneShifts);
-    print "factor:", factor
+    # print "factor:", factor
     f = f*factor
     
     # process upward octave shifts 

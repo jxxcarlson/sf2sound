@@ -22,7 +22,7 @@ case $1 in
 
 	cp stack.py $INSTALL_DIR
 	cp ring.py $INSTALL_DIR
-        cp melody.py $INSTALL_DIR
+        cp melody.py $INSTALL_DIR;;
 
   -test)
 	echo
