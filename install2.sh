@@ -18,7 +18,11 @@ case $1 in
 
 	cp parse.py $INSTALL_DIR
 	cp comment.py $INSTALL_DIR
-	cp stringUtil.py $INSTALL_DIR;;
+	cp stringUtil.py $INSTALL_DIR
+
+	cp stack.py $INSTALL_DIR
+	cp ring.py $INSTALL_DIR
+        cp melody.py $INSTALL_DIR
 
   -test)
 	echo
