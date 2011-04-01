@@ -1,6 +1,7 @@
 import math
 
-from parse import splitToken, isSubset, alphaPrefix, numPrefix, count
+from parse import splitToken, trisectToken, isSubset, alphaPrefix, numPrefix, count
+from ring import Ring
 
 class Note(object):
 
@@ -15,6 +16,7 @@ class Note(object):
   alternateNoteDict = { }
 
   def __init__(self):
+    self.ring = Ring()
     self.setNotes()
     self.setAlternateNoteDict()
     self.accents = ['+', '-', ',', '.', '_', '^']
@@ -23,7 +25,52 @@ class Note(object):
   def setNotes(self):
   # List of note names
     self.notes = ["do", "di", "re", "ri", "mi", "fa", "fi", "sol", "si", "la", "li", "ti"]
+    self.ring.pushList(self.notes)
     
+  # return unique numerical index for each note token
+  def index(self, token):
+  
+    # scale length:
+    SL = len(self.notes)
+  
+    # parse
+    root, infix, suffix = trisectToken(token)
+    root = self.normalizedNote(root)
+    # print "trisection["+token+"]:", root, infix, suffix
+   
+    # get index of bare note 
+    k = self.ring.index(root)
+    if k < 0:
+      return -1000
+   
+    # add octave shifts
+    if len(infix) > 0:
+      octave = int(infix) - 1
+    else:
+      octave = 0
+    octave += count('^', suffix)
+    octave -= count('_', suffix)
+    k = k + SL*octave
+   
+    # add semitione shifts
+    s = count('+', suffix)
+    s -= count('-', suffix)
+    k += s
+   
+    return k
+   
+  def note(self, j):
+  # return normalized note of index j
+  # scale length:
+    SL = len(self.notes)
+    k = j % SL
+    octave = j // SL
+    if octave == 0:
+      return self.notes[k]
+    else:
+      octave = octave + 1
+      return self.notes[k]+`octave`
+   
   def isNote(self, token):
     root, suffix = splitToken(token)
     a = alphaPrefix(root)	
@@ -44,6 +91,14 @@ class Note(object):
      "te":"li"
     } 
     self.alternateNotes = self.alternateNoteDict.keys()
+    
+  def normalizedNoteData(self, x):
+    y = alphaPrefix(x)
+    root, suffix = splitToken(x)
+    if y in self.alternateNoteDict.keys():
+      return self.alternateNoteDict[y]+suffix
+    else:
+      return y, suffix
     
   def normalizedNote(self, x):
     y = alphaPrefix(x)

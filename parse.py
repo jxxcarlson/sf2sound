@@ -56,7 +56,15 @@ def splitToken(token):
   root = token[:k]
   suffix = token[k:]
   return root, suffix
-
+  
+def trisectToken(token):
+  root = alphaPrefix(token)
+  k = len(root)
+  suffix = token[k:]
+  infix = numPrefix(suffix)
+  k = len(infix)
+  suffix = suffix[k:]
+  return root, infix, suffix
 
 def vectorAnd(boolVector):
   result = True
