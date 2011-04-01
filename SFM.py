@@ -33,10 +33,12 @@ from stringUtil import * # catList, catList2
 
 class SFM(object):
 
-  # tempo registers
-  tempo = 60
+  # pitch registers
   transpositionSemitones = 0
   octaveNumber = 3
+
+  # tempo registers
+  tempo = 60
   currentBeatValue = 60.0/tempo
   currentBeat = 0
   totalDuration = 0.0
@@ -139,6 +141,9 @@ class SFM(object):
     # pitch transposition
 	if cmd == "octave":
 		self.octaveNumber = int(ops[1])
+	if cmd == "transpose":
+		self.transpositionSemitones = int(ops[1])
+	    
 		
 	# pass special commands through	
 	if cmd[0] == '@':

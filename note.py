@@ -76,6 +76,7 @@ class Note(object):
     
     # apply transpose register
     factor = pow(self.semitoneFactor, nSemitoneShifts);
+    print "factor:", factor
     f = f*factor
     
     # process upward octave shifts 
