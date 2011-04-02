@@ -222,7 +222,7 @@ parser.add_option("-s", "--scale", action="store", type="string", dest="scale")
 if options.filename:
   input = file2string(options.filename)
 else:
-  input = args
+  input = args[0]
   
 if options.output:
   output = options.output
