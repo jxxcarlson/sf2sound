@@ -8,7 +8,7 @@ case $1 in
 	gcc mix.c -o mix
 	mv mix $INSTALL_DIR
 
-	cp driver.py $INSTALL_DIR/sf2sound
+	cp driver.py $INSTALL_DIR
 	cp sf2a.py $INSTALL_DIR 
 	cp SFM.py $INSTALL_DIR
 
@@ -25,7 +25,7 @@ case $1 in
 	cp ring.py $INSTALL_DIR
         cp melody.py $INSTALL_DIR
 
-	cp ui.py $INSTALL_DIR ;;
+	cp ui.py $INSTALL_DIR/sf2a ;;
 
   -test)
 	echo

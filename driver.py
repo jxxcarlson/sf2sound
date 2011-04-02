@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+
 
 import os, sys, string
 from SFM import SFM
@@ -8,7 +8,6 @@ from stringUtil import *
 from scales import scale
 
 ############################
-
 # Location of text2sf and quad2samp in system:
 TEXT2SF = "~/Dropbox/bin/text2sf"
 QUAD2SAMP = "~/Dropbox/bin/quad2samp"
@@ -157,11 +156,7 @@ def run(input, fileName, SCALE):
   # sampFile = F+".samp"
   wavFile = F+".wav"
   # print "FILES:", quadFile, sampFile, wavFile
-  
-  # prepare input
-  input = input.replace("\n", " ")
-  input = stripComments(input)
-  
+    
   # input = executePreamble(input)
   
   # extract the voices (return list thereof)
@@ -205,42 +200,3 @@ def run(input, fileName, SCALE):
     cmd = "rm tmp*.quad tmp*.samp"
     os.system(cmd)
     
-#########
-
-from optparse import OptionParser
-
-parser = OptionParser()
-
-
-parser.add_option("-f", "--file", action="store", type="string", dest="filename")
-parser.add_option("-o", "--output", action="store", type="string", dest="output")
-parser.add_option("-s", "--scale", action="store", type="string", dest="scale")
-
-
-(options, args) = parser.parse_args()
-
-if options.filename:
-  input = file2string(options.filename)
-else:
-  input = args[0]
-  
-if options.output:
-  output = options.output
-else:
-  output = "out"
-  
-if options.scale:
-  SCALE = options.scale
-else:
-  SCALE = "diatonic"
-
- 
-print "INPUT:", input
-print "OUTPUT:", output
-print "SCALE:", SCALE
-print "ARGS:", args
-
-
-run(input, output, SCALE)
-
-
