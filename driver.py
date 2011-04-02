@@ -57,6 +57,7 @@ def getVoices(input):
   voices.append(input[k:])
 
   # return list
+  # print "VOICES:", voices
   return voices
    
   print voices
@@ -106,29 +107,38 @@ def samp2wav(inputFile, outputFile):
   
   cmd = catList([TEXT2SF, inputFile, outputFile, "44100", "1", `recording_level`])
   os.system(cmd)
-  
+
 ###########################################
 
-def processVoice(voice, voiceProcessed):
+def processVoice(voice, SCALE):
 
-  global waveformFiles, maximumAmplitude
+  global waveformFiles, maximumAmplitude, voiceProcessed
 
+
+  #################################################
   # write quadfile
+  
   voice = voice.strip()
-  NOTES, FREQ = scale["diatonic"]
-  S = SFM(scale["diatonic"])
+  # NOTES, FREQ = scale[SCALE]
+  S = SFM(scale[SCALE])
   S.input = voice
   quadruples = S.tuples()
+
   header = "@attack:0.02\n@release:0.04\n@harmonics:1.0\n"
   # header = "@attack:0.02\n@release:0.04\n@harmonics:1.0:0.5:0.25:0.125\n"
   quadruples = header+quadruples
-  print "Voice "+`voiceProcessed+1`+":", S.totalDuration, S.currentBeat, S.maximumAmplitude
+  print "Voice "+`voiceProcessed`+":", S.totalDuration, S.currentBeat, S.maximumAmplitude
+  
   durations.append(S.totalDuration)
+  
   file = "tmp"+`voiceProcessed`
   quadfile = file+".quad"
   string2file( quadruples, quadfile)
+  
+  #################################################
 	
   # write wavform file
+  
   sampfile = file+".samp"
   maximumAmplitude = quad2samp(quadfile, sampfile)
   waveformFiles.append(sampfile)
@@ -136,16 +146,17 @@ def processVoice(voice, voiceProcessed):
   return maximumAmplitude
 
 
-def run(input, fileName):
+def run(input, fileName, SCALE):
   
-  global waveformFiles
+  global waveformFiles, voiceProcessed, durations
   print
   
   # set up file names
   F = fileName.split(".")[0]
-  quadFile = F+".quad"
-  sampFile = F+".samp"
+  # quadFile = F+".quad"
+  # sampFile = F+".samp"
   wavFile = F+".wav"
+  # print "FILES:", quadFile, sampFile, wavFile
   
   # prepare input
   input = input.replace("\n", " ")
@@ -158,15 +169,16 @@ def run(input, fileName):
   
   voiceProcessed = 0
   waveformFiles = [ ]
-  global durations
   durations = [ ]
   
   # process Voices
+  voiceProcessed = 0
   for voice in voices:
     global maximumAmplitude
-    thisMaximumAmplitude = processVoice(voice, voiceProcessed)
+    # HERE IS THE ACTION:
+    thisMaximumAmplitude = processVoice(voice, SCALE)
     if thisMaximumAmplitude > maximumAmplitude:
-      maximumAmplitude = thisMaximumAmplitude
+      maximumAmplitude = thisMaximumAmplitude	
     voiceProcessed = voiceProcessed + 1
   
   # mix waveform files if necessary
@@ -182,7 +194,8 @@ def run(input, fileName):
   # generate waveform file
   print "generating audio file ..."
   if voiceProcessed == 1:
-    samp2wav("tmp0.samp", wavFile)
+    sampFile = "tmp0.samp"
+    samp2wav(sampFile, wavFile)
   else:
     samp2wav(mixfile, wavFile)
     
@@ -192,19 +205,42 @@ def run(input, fileName):
     cmd = "rm tmp*.quad tmp*.samp"
     os.system(cmd)
     
-  print
-  
-if sys.argv[1] == "-f":
-  input = file2string(sys.argv[2])
-  if len(sys.argv) == 4:
-  	output = sys.argv[3]
-  else:
-  	output = "out"
-else:
-  input = sys.argv[1]
-  if len(sys.argv) == 3:
-  	output = sys.argv[2]
-  else:
-  	output = "out"
+#########
 
-run(input, output)
+from optparse import OptionParser
+
+parser = OptionParser()
+
+
+parser.add_option("-f", "--file", action="store", type="string", dest="filename")
+parser.add_option("-o", "--output", action="store", type="string", dest="output")
+parser.add_option("-s", "--scale", action="store", type="string", dest="scale")
+
+
+(options, args) = parser.parse_args()
+
+if options.filename:
+  input = file2string(options.filename)
+else:
+  input = args
+  
+if options.output:
+  output = options.output
+else:
+  output = "out"
+  
+if options.scale:
+  SCALE = options.scale
+else:
+  SCALE = "diatonic"
+
+ 
+print "INPUT:", input
+print "OUTPUT:", output
+print "SCALE:", SCALE
+print "ARGS:", args
+
+
+run(input, output, SCALE)
+
+

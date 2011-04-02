@@ -23,7 +23,9 @@ case $1 in
 
 	cp stack.py $INSTALL_DIR
 	cp ring.py $INSTALL_DIR
-        cp melody.py $INSTALL_DIR;;
+        cp melody.py $INSTALL_DIR
+
+	cp ui.py $INSTALL_DIR ;;
 
   -test)
 	echo
@@ -35,7 +37,7 @@ case $1 in
 
   -test2)
 	echo
-        python sheco.py "sf2sound '@foo:81 voice:1 @bar:27 tempo:60 decay:2.0 octave:3 h mi re voice:2 tempo:60 decay:2.0 octave:2 h do sol' output2";;
+        python sheco.py "sf2sound '@foo:81 voice:1 @bar:27 tempo:60 decay:2.0 octave:1 h mi re voice:2 tempo:60 decay:2.0 octave:0 h do sol' output2";;
 
   -test3)
 	echo
