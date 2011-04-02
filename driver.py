@@ -1,6 +1,5 @@
 
-
-import os, sys, string
+import os 
 from SFM import SFM
 from parse import getChunk
 from comment import stripComments
