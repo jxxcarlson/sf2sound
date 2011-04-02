@@ -60,8 +60,9 @@ class SFM(object):
   #########################################################
   
   # initialize Note, Rhythm, and Dynamics objects
-  def __init__(self):
-    self.note = Note({})
+  def __init__(self, SCALE):
+    NOTES, FREQ_DICT = SCALE
+    self.note = Note(NOTES, FREQ_DICT)
     self.rhythm = Rhythm()
     self.dynamics = Dynamics()
     # self.tempo = 60

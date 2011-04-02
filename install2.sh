@@ -13,6 +13,7 @@ case $1 in
 	cp SFM.py $INSTALL_DIR
 
 	cp note.py $INSTALL_DIR
+	cp scales.py $INSTALL_DIR
 	cp rhythm.py $INSTALL_DIR
 	cp dynamics.py $INSTALL_DIR
 
@@ -26,7 +27,7 @@ case $1 in
 
   -test)
 	echo
-        python sheco.py "sf2sound '@foo:12 tempo:120 octave:2 q do e re mi q fa sol h la sol' output";;
+        python sheco.py "sf2sound '@harmonics:1.0:0.5:0.25:0.125:0.06 tempo:120 octave:1 q do e re mi q fa sol h la sol' output";;
 
   -x)
 	echo

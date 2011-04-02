@@ -15,27 +15,17 @@ class Note(object):
 
   alternateNoteDict = { }
 
-  def __init__(self, NOTE_TABLE):
+  def __init__(self, NOTES, FREQ):
     self.ring = Ring()
-    self.setNotes(NOTE_TABLE)
+    self.setNotes(NOTES)
     self.setAlternateNoteDict()
     self.accents = ['+', '-', ',', '.', '_', '^']
-    self.setFrequencyDictionary(self.CFreq_4, NOTE_TABLE)
+    self.setFrequencyDictionary(self.CFreq_4, FREQ)
      
-  def setNotes(self, NOTE_TABLE):
+  def setNotes(self, NOTES):
   # List of note names
-    if NOTE_TABLE == { }:
-      self.notes = ["do", "di", "re", "ri", "mi", "fa", "fi", "sol", "si", "la", "li", "ti"]
-    else:
-      self.notes = NOTE_TABLE.keys()
+    self.notes = NOTES
     self.ring.pushList(self.notes)
-    
-  """
-  def setNotes(self, noteList):
-  # List of note names
-    self.notes = noteList
-    self.ring.pushList(self.notes)
-  """
   
   # return unique numerical index for each note token
   def index(self, token):
@@ -118,16 +108,9 @@ class Note(object):
     else:
       return y+suffix
 
-  def setFrequencyDictionary(self, baseFrequency, NOTE_TABLE):
-    if NOTE_TABLE == {}:
-      self.noteFreq = {}
-      freq = baseFrequency
-      for j in range(0, len(self.notes)):
-        self.noteFreq[self.notes[j]] = freq
-        freq = self.semitoneFactor*freq
-    else:
-      self.noteFreq = NOTE_TABLE
-      self.noteFreq["x"] = 0.0
+  def setFrequencyDictionary(self, baseFrequency, FREQ):
+    self.noteFreq = FREQ
+    self.noteFreq["x"] = 0.0 # x = 	rest
       
 
   def freq(self, token, nSemitoneShifts, octaveNumber):

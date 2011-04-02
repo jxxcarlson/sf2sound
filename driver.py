@@ -5,6 +5,7 @@ from SFM import SFM
 from parse import getChunk
 from comment import stripComments
 from stringUtil import *
+from scales import scale
 
 ############################
 
@@ -114,7 +115,8 @@ def processVoice(voice, voiceProcessed):
 
   # write quadfile
   voice = voice.strip()
-  S = SFM()
+  NOTES, FREQ = scale["diatonic"]
+  S = SFM(scale["diatonic"])
   S.input = voice
   quadruples = S.tuples()
   header = "@attack:0.02\n@release:0.04\n@harmonics:1.0\n"
