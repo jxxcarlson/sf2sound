@@ -20,6 +20,8 @@
 #
 ##########################################################
 
+
+
 ON = 1
 OFF = 0
 DEBUG = OFF
@@ -30,6 +32,7 @@ from note import Note
 from rhythm import Rhythm
 from dynamics import Dynamics
 from stringUtil import * # catList, catList2
+from listUtil import interval, mapInterval
 
 class SFM(object):
 
@@ -65,17 +68,37 @@ class SFM(object):
     self.note = Note(NOTES, FREQ_DICT)
     self.rhythm = Rhythm()
     self.dynamics = Dynamics()
+    self.equalizerFactor = { }
+    self.equalizerFactor[-0.1] = 1.0
+    self.equalizerFactor[220] = 1.0
+    self.equalizerFactor[440] = 0.7
+    self.equalizerFactor[880] = 0.35
+    self.equalizerFactor[1760] = 0.15
+    self.equalizerFactor[3520] = 0.15
+    self.equalizerFactor[7040] = 0.15
+    self.equalizerFactor[14080] = 0.15
+    self.equalizerFactor[28160] = 0.15
+    self.equalizerFactor[56320] = 0.15
+    self.equalizerBreakPoints = [-0.1, 220, 440, 880, 1760, 3520, 7040, 14080, 28160, 56320]
+    
     # self.tempo = 60
     # self.currentBeatValue = 60.0/self.tempo
     # self.octaveNumber = 3
     
+  def equalize(self, freq):
+    a, b = interval(freq, self.equalizerBreakPoints)
+    f = mapInterval(freq, a,b, self.equalizerFactor[a], self.equalizerFactor[b])
+    # print freq, a, b, f
+    return f
 
   # return tuple as string given frequency,
   # duration, decay, and amplitude
   def _tuple(self, freq, duration):
     output = `freq`
     output += " "+`duration`
-    output += " "+`self.amplitude`
+    a = self.amplitude
+    a = a*self.equalize(freq)
+    output += " "+`a`
     output += " "+`self.decay`
     return output
   

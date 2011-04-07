@@ -25,6 +25,7 @@ case $1 in
 	cp ring.py $INSTALL_DIR
         cp melody.py $INSTALL_DIR
 
+	cp listUtil.py $INSTALL_DIR
 	cp ui.py $INSTALL_DIR/sf2a 
         cp dict.py $INSTALL_DIR/dict ;;
 
