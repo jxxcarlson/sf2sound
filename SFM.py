@@ -157,6 +157,7 @@ class SFM(object):
   def tuples(self):
   
     # split intput into list of tokens
+    self.input = self.input.replace("\n", " ")
     tokens = self.input.split(" ")
     # make sure there are not empty list elements
     tokens = filter( lambda x: len(x), tokens)

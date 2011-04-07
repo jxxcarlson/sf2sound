@@ -1,5 +1,6 @@
 import string
 
+
 def indexOfAlphaPrefix(token):
 
   n = len(token)
@@ -95,3 +96,37 @@ def getChunk(str, start_tag, end_tag):
   result = str[a:b]
   n = len(start_tag)
   return string.strip(result[n:])
+
+def getChunk2(str, start_tag, end_tag):
+  """                                                                                         
+  Return the chunk of str that is delimited by start_tag and end_tag.                                                                  
+  """
+  a = string.find(str, start_tag)
+  b = string.find(str, end_tag)
+  result = str[a:b]
+  n = len(start_tag)
+  return string.strip(result[n:]), a, b + len(end_tag)
+
+def getItem(source, tag):
+  # return <tag>foo</tag> from sourde
+  a = "<"+tag+">"
+  b = "</"+tag+">"
+  return getChunk(source, a, b)
+
+def getItem2(source, tag):
+  # return <tag>foo</tag> from sourde
+  a = "<"+tag+">"
+  b = "</"+tag+">"
+  return getChunk2(source, a, b)
+
+def getItems(source, tag):
+  output = [ ]
+  scanning = True
+  while scanning == True:
+    item, start, end = getItem2(source, tag)
+    if start > -1:
+      output.append(item)
+      source = source[end:]
+    else:
+      scanning = False
+  return output
