@@ -24,6 +24,12 @@ def file2string(f):
   FF.close()
   return result
 
+def file2string2(path, f):
+  F = path+f
+  FF = open(F,'r')
+  result = FF.read()
+  FF.close()
+  return result
 
 def catList(L):
   # return concatentation of elements of list, but

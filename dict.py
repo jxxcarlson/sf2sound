@@ -3,8 +3,12 @@
 import os
 from optparse import OptionParser
 from driver import run
-from stringUtil import file2string, string2file
+from stringUtil import file2string, file2string2, string2file
 from parse import getItem, getItems, xml2html
+
+INSTALL_DIR = "/Applications/sf2a/"
+SCRIPT = INSTALL_DIR+"script"
+
 
 desc="""dict is a python program for building music dictation lessons.
 """
@@ -81,7 +85,7 @@ def webpage():
 
   text = '<html>\n<head>\n<link rel="stylesheet" type="text/css"  media="screen" href="style.css">\n'
 
-  text += file2string("script")
+  text += file2string2(INSTALL_DIR, "script")
 
   text += '\n<head>\n\n<body>\n\n'
   text += '<h1>Dictation</h1>\n'
@@ -92,9 +96,9 @@ def webpage():
   element3 = '<span class="embed"><embed src="'
   element4 = '" width=300 align=bottom height=15px autostart=false repeat=false loop=false"> <embed></span>\n</p>\n\n'
 
-  element5 = file2string("element5")
+  element5 = file2string2(INSTALL_DIR, "element5")
 
-  element6 = file2string("element6")
+  element6 = file2string2(INSTALL_DIR, "element6")
 
   footer = '</body>\n</html>\n\n'
 
