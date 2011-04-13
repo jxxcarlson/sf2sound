@@ -1,0 +1,594 @@
+\documentclass[11pt]{amsart}
+
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{problem}{Problem}
+\newtheorem{question}{Question}
+\newtheorem{example}{Example}
+
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\usepackage{enumerate}
+
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+
+\title{sf2sound\\
+(D R A F T) \\}
+\author{James Carlson and Hakon Hallgrimur }
+
+\date{March 20, 2011.\\ 
+ \emph{file = sf2sound.tex}} 
+ 
+                                           
+\newcommand{\mcaret}{$\hat{}$}
+\newcommand{\mmcaret}{$\hat{}\;\hat{}$}
+
+\newcommand{\mapright}[1]{\ \smash{ 
+   \mathop{\Longrightarrow}\limits^{#1}}\ }
+
+\newcommand{\strong}[1]{{\bf #1}}
+
+\newcommand{\fig}[3]{  \[\includegraphics[scale=#2]{#1}\] \[\hbox{#3}\] }
+% \fig{ex1-wav2}{0.2}{the file ex1.wav}
+\begin{document}
+\maketitle
+%\section{}
+%\subsection{}
+
+
+
+
+
+% \abstract{foo, bar}{}
+\begin{abstract}
+We report on {\tt sf2sound}, a unix command-line program to create sound files from text such as
+{\tt moderato:\ do re mi}.  SF, a mini-language for music input is introduce.  The program is based 
+on a modular engine that may find other uses.  Source code is available at http://.
+\end{abstract}
+
+
+\tableofcontents
+
+
+\parskip=8pt
+\parindent=0pt
+
+\section{Introduction}
+
+
+This report describes a unix command-line program,
+{\tt sf2a}, that  converts music, represented by conventional solfa syllables
+and other symbols, into a playable audio file.  Here is an example:
+\begin{verbatim}
+     % sf2a 'do re mi'
+\end{verbatim}
+Executing this command produces the sound file {\tt out.wav} which can be played
+on any computer and whose visual representation is as below. 
+
+\fig{ex1-wav2}{0.2}{out.wav}
+
+We can also set rhythm values, tempo, etc, as well as the name of the output file
+\begin{verbatim}
+    % sf2a -o foo 'moderato: \
+      q do . e re mi . q fa sol | h la sol'
+\end{verbatim}
+The token {\tt q} 
+stands for a quarter note.  All of  the notes following it will be quarter
+notes until a new rhythm symbol is encountered.  Thus the token {\tt e} changes
+the current rhythm value to an eighth note, and {\tt h} changes it
+to a half note.  The command {\tt moderato:} sets the tempo.
+We could also have said {\tt tempo:144}. The symbols {\tt .} and {\tt |}
+are there only to make the text easier to read.  They are ignored
+by {\tt sf2sound}.  The symbol {\tt \ } is used  as with any unix command to
+break up a long line.  The option {\tt -o foo} sets the name of the output
+file, which will be {\tt foo.wav}.
+
+One can compose in more than one voice:
+\begin{verbatim}
+    % sf2a -o foo 'decay:2.0 voice:1 do re do voice:2 sol fa mi'
+\end{verbatim}
+In its current implementation, {\tt sf2sound} can handle up to ten voices may.
+For this many voices, command-line input is impractical.  Here is a monophonic
+example of input taken from a file:
+\begin{verbatim}
+     % sf2a -f ex3
+\end{verbatim}
+where {\tt ex3} is a file with contents
+\begin{verbatim}
+     Example 2. By Anonymous
+     @attack:0.01 @release:0.02 
+     @harmonics:1.0:0.4:0.2:0.1
+     moderato:
+     | f: q do re . e mi fa . q sol re |
+     | stacc: p: q do re . e mi fa .  q sol re |
+     | leg: do mi re do | 
+\end{verbatim}
+The output of this command is the file {\tt out.wav}.
+Let us examine the input.  We begin with the music and then discuss
+the commands like {\tt attack:0.01}.  
+
+The symbol
+ {\tt f:} stands for \emph{forte} and {\tt p:} for \emph{piano}.
+Likewise {\tt leg:} and {\tt stacc:} stand for \emph{legato} and \emph{staccato}.
+The symbols {\tt |} and {\tt .} have no meaning for {\tt sf2sound} and are ignored
+by it.  They do, however, help us (humans) to parse, read, and write the text.  
+The bar-line symbol {\tt |} the period are used
+to separate whatever blocks of text the author would like to delineate.  A system
+of ignorable text makes it possible to enter extensive notes if so desired.  
+One can also insert explicit comments. e.g., {\tt // This is a comment}.    
+
+
+Two of the symbols in the input are \emph{accented}  An accent is a trailing
+non-alphanumeric character.  The accented symbol 
+\[
+  \hbox{{\tt sol,}}
+\] 
+signals the
+end of a phrase.  At phrase endings, notes are slightly shortened and
+a compensating rest is inserted.  The accented symbol {\tt ti\_} is the
+note {\tt ti\_} one octave below.  Likewise {\tt ti\mcaret} is  {\tt ti} one
+octave above.
+
+Let's now look at the commands.  The first two, 
+\[
+  \hbox{{\tt @attack:0.01} and {\tt @release:0.02},}
+\]
+determine the attack and release of the note by shaping its waveform.
+The command 
+\[
+  \hbox{{\tt @harmonics:1.0:0.4:0.2:0.1}}
+\]
+determines the timbre (tone color) of the 
+note by controlling the relative proportions of the overtones of the fundamental
+tone. Finally, the command {\tt fundamental:130} sets the frequency in Hertz of {\tt do}.
+
+None of the commands discussed are mandatory.  If they are omitted, the variables which they
+control take their default values.  See section \ref{sec:SFLR} for a full discussion of the
+available commands.
+
+\section{The SF Language}
+
+It is apparent from the foregoing that the input to {\tt sf2sound}, be it 
+on the command line or in a file, is  expressed in a mini-language with its
+own vocabulary and grammar.  We have dubbed this language ``SF,'' for solfa.
+The language consists of (1) pitch symbols, (2) rhythm symbols, (3) commands.
+As noted above, the SF machine ignores inputs that are not part of the SF language.
+
+
+\strong{1. Pitch symbols.}  The basic symbols are {\tt do re mi fa sol la ti}, and their
+sharp and flat relatives: {\tt di ri fi so, li} and {\tt de ra me fe se le te}.
+These symbols may carry various accents.  The symbol for a rest is {\tt x}.
+
+The symbols {\tt do do1 do2} represent the 
+notes C, C an octave higher, and C two octaves higher.  The symbols {\tt do\_1 do\_2}
+represent C an octave lower and two octaves lower.  Since SF is designed for the 
+convenience of humans, alternate notations abound.  Thus {\tt do\_ do\_\_ } means
+the same thing as {\tt do\_1 do\_2}, and {\tt do\mcaret\ do{\mmcaret}} means the same thing
+as does {\tt do do1 do2}.
+
+\strong{2. Rhythm symbols.}  The basic symbols are {\tt w h q e s t} for whole, half, quarter, eighth,
+sixteenth, and thirty-second note.  These may carry accents.  For example, the symbol {\tt q.} is a dotted 
+quarter note.
+
+\strong{3. Commands.} Examples are {\tt f:} for forte and {\tt tempo:144}. 
+which sets the tempo to 144
+beats per minute.  Commands may take zero or several arguments.  Thus {\tt cresc:4:f} is a two-
+argument
+command.  It means: crescendo from the current level to forte over 4 beats
+
+As with pitch symbols, there are alternate notations.  Thus {\tt forte:} is the same as 
+{\tt f:}. Above, one could have written {\tt cresc:4:forte}. 
+
+There is also a special clase of commands of the form {\tt @anystring}.  These commands are passed without
+change to the next stage of the pipeline.  Examples already cited are {\tt @attack:0.01} and 
+{\tt @harmonics:1.0:0.4:0.2:0.1}.
+
+For a full description of SF, see section \ref{sec:SFLR}.
+
+
+
+
+
+\section{The SF Pipeline}
+
+The program {\tt sf2sound} produces audio from text by applying a sequence of transformations, as pictured below. 
+
+\[
+  \hbox{solfa} 
+  \mapright{\hbox{\tt SF}}
+  \hbox{tuples}
+  \mapright{\hbox{\tt TU}}
+  \hbox{waveform}
+  \mapright{\hbox{\tt WA}}
+  \hbox{audio}
+\]
+
+This sequence of transformations is the \emph{SF pipeline}.  
+Each transformation is carried by an implementation of
+an abstract machine that processes an input stream to produce an output
+stream.  These machines are SF, TU, and WA.  
+
+The first machine, SF, accepts
+SF text as input and produces \emph{tuples} as output.
+A tuple $T$ consists of numbers $(f,d, a, \tau)$,
+where $f$ is the frequency in Hertz, $d$ is the duration of the note in seconds,
+$a$ is its amplitude, and $\tau$ is the time constant for the decay of the note.
+
+The second machine, TU, accepts tuples as input and produces waveform data as 
+output. Waveform data is a sequence of numbers $s_0, s_1, s_2, \ldots, s_N$.
+Suppose that $\phi(t)$ is the ultimate acoustic pressure wave produced by playing 
+the sound file written by {\tt sf2sound ex1 'do re mi'}.  Then $s_i = \phi(t_i)$.
+Thus the $s_i$ are \emph{samples} of the actual wave form $\phi$. The \emph{sample times}
+$t_i$ are evenly spaced.  One generally takes $t_{i+1} - t_{i}$ = 1/44,100 seconds,
+about 20 microseconds.  Thus a waveform file (or sample file) contains 44,100 numbers
+for each second of audio. This is the standard sample rate for CD's and MP3's.
+
+The third machine, WA, converts the waveform file, which is a long column of ASCII text,
+into a binary file in some standard audio file format, in this case, {\tt.wav}.
+
+Let us take the solfa text {\tt moderato: q do . e re mi . q fa sol | h la sol} and 
+what happens to it as it moves down the pipeline.
+
+{\bf 1.} The SF machine sends the stream of solfa tokens through
+a preprocessor to remove barlines and dots with space on either side.
+The result is notestream {\tt moderato: q do e re mi q fa sol  h la sol}.  Next,
+it creates a stream
+of tuples $Q_1, Q_2, Q_3, ...$ as listed below.
+\begin{verbatim}
+    261.62556530059868 0.52631578947368418 1.0 0.5 
+    293.66476791740763 0.26315789473684209 1.0 0.5 
+    329.62755691287003 0.26315789473684209 1.0 0.5 
+    349.228231433004   0.52631578947368418 1.0 1.0 
+    391.99543598174944 0.52631578947368418 1.0 1.0 
+    440.00000000000017 1.0526315789473684  1.0 1.0 
+    391.99543598174944 1.0526315789473684  0.3 1.0 
+ \end{verbatim}
+The tuples determine the ``music'' to be played: the
+columns, reading from left right, give the pitch (frequency),
+duration, loudness (amplitude), and decay (how fast the note dies away).
+The decay constant has the dimension of times.  A smaller decay constant,
+corresponds to more percussive sounds; a larger one corresponds to more sustained sounds.
+
+The tuple stream can also contain special commands like {\tt @attack:0.01},
+which are passed through from the solfa text unchanged.   In a moment, we will
+see what the special commands do.
+
+{\bf 2.} The next transformation maps a the stream of tuples $Q_1, Q_2, \ldots ,Q_N$ to 
+stream of numbers representing a sampled waveform, as described above.  Here
+are the first ten lines in the waveform stream:
+
+\begin{verbatim}
+    0.00000000
+    0.00000014
+    0.00000084
+    0.00000256
+    0.00000578
+    0.00001103
+    0.00001891
+    0.00003005
+    0.00004516
+    0.00006501
+\end{verbatim}
+
+The waveform stream contains 185,682 numbers.  Since 44,1000 numbers stream by
+each second, we can compute the playing time from the file length: 185,682/44,100 = 4.21
+seconds.  This is, of course, the same as the sum of the numbers in the second column of the tuple 
+stream.  Below is a graphical representation of the first 1000 numbers in the waveform stream:
+
+
+\fig{plot1000}{0.5}{Waveform, 1000 samples}
+
+
+
+{\bf 3.} The final transformation creates an audio file in .wav format from the sampled waveform file.
+It is a binary file, which we may view in hexdecimal form.  Below are the the first 20,480 bits
+of the file, organized in lines of eight 256 bit words:
+
+\begin{verbatim}
+    4952    4646    aae8    0005    4157    4556    6d66    2074
+    0010    0000    0001    0001    ac44    0000    5888    0001
+    0002    0010    4550    4b41    0018    0000    0001    0000
+    2631    4d84    47ad    3f1e    0000    0000    b730    0000
+    0000    0000    6164    6174    aaa4    0005    0000    0000
+    0000    0000    0000    0000    0000    0000    0001    0001
+    0001    0002    0003    0003    0004    0005    0007    0008
+    000a    000c    000e    0010    0012    0015    0018    001b
+    001e    0021    0025    0029    002d    0031    0035    003a
+    003e    0043    0048    004d    0053    0059    005f    0066
+\end{verbatim}
+
+
+The Python program {\tt solfa2sound} plumbs the output of one stage of the pipeline to the input of the next, effecting the transformation of solfa text into a sound file.
+
+
+
+\section{The SF Machine}
+
+The SF machine accepts one token of the SF language at time. It operates as follows:
+
+\begin{enumerate}[(a)]
+
+	\item If the token is a note, the machine writes a quadruple to output.  The value of the quadruple
+	depends on the input token and the state of the machine, e.g., the value of the {\tt duration} register.
+	
+	\item If the token is a rhythm symbol, it changes the value of the duration register of the machine.
+	
+	\item If the token is a command of the form {\tt @anystring:} or 
+	{\tt @anystring:arg1} etc., that command is executed.  By {\tt anystring} we mean 
+	a nonempty string consisting of the character {\tt a..z}.
+	
+	\item If the token is a command of the form {\tt @anystring:} or {\tt @anystring:arg1} etc.,
+	it is passed on unchanged to the TU machine for processing.
+	
+	\item If none of the above hold, the token is ignored.
+
+\end{enumerate}
+
+The registers of the SF machine are as follows. // NEEDS UPDATE
+
+\begin{description}
+
+	\item[{\tt frequency}] Set by the input token if it is a note.
+	
+	\item[{\tt duration}]  Holds the current duration in seconds.  Set by the input token if it
+	        is a rhythm symbol.
+	        
+	\item[{\tt decay}] Default is 0.5. Set by {\tt decay:0.4} and commands like 
+	{\tt staccato:}, {\tt legato:} 
+	        
+	\item[{\tt amplitude}] Holds the current amplitude.  The default value is 1.0.  Set by
+	commands such as {\tt amplitude:0.123}, {\tt forte:} and {\tt piano:} .
+	
+	\item[{\tt beat}] This can be {\tt e}, {\tt q} or {\tt h}, for eighth, quarter, of half note.
+	A quarter note is the default.
+	
+	\item[{\tt tempo}]  The tempo in beats per minute.  
+	
+	\item[{\tt beatDuration}] This has the value {\tt 60.0/tempo}.
+	
+	\item[{\tt transpose}]  If its contents are $n$, the pitch is shifted by
+	$n$ semitones.  Default value is zero.
+
+\end{description}
+
+
+
+\section{The TU Machine}
+
+The TU machine transforms a stream of tuples to a waveform represented as
+a sequence of samples.  It also accepts certain commands which affect the 
+synthesis of the waveform.
+
+\begin{description}
+
+  \item[{\tt @harmonic:a:b:c:...}] -- sets the amplitudes of the fundamental tone
+   to {\tt a}, of the first overtone to {\tt b}, etc.
+   
+  \item[{\tt @attack:p}] -- sets the length of the attack phase of a note to 
+  $t1 = p\times t$ seconds, where the duration of the note is $t$ seconds.
+  
+  \item[{\tt @release:p}] -- sets the length of the release phase of a note to 
+  $t2 = p\times t$ seconds, where the duration of the note is $t$ seconds.
+  
+\end{description}
+
+
+\section{SF Language Reference}
+\label{sec:SFLR}
+
+\subsection{Pitch symbols}
+
+The primary pitch symbols are {\tt do re mi fa sol la ti} and their
+flatted and sharped versions, {\tt de ra me se le te} and
+{\tt di ri fi si li}.  The pitch accents are
+
+\begin{description}
+
+\item[{\tt +}]  Raises pitch by a semitone, as in {\tt fa+}. Multiple
+values, e.g., {\tt fa++} are permitted.
+
+\item[{\tt -}]  Lowers pitch by a semitone, as in {\tt ti-}. Multiple
+values, e.g., {\tt ti--} are permitted.
+
+\item[{\tt <n>} ] A positive integer suffix of $n$ means: raise the pitch
+by $(n-1)$ octaves.
+
+\item[{\tt\^{}}]  Raise the pitch
+by an octave, e.g. {\tt do\_} is an octave above middle C
+
+
+\item[{\tt\_{}} ] Lower the pitch
+by an octaves, e.g., {\tt do\_ }
+
+\item[{\tt ,}]   The comma is used to mark phrase endings, as in 
+\[
+  \hbox{{\tt e mi fa q re h do, q ti\_ ti\_ re fa ...}}
+\]
+The note accented by the comma is shortened and a compensating rest is added
+in order to keep the beat.  The relative size of the compensating breath
+is by default 0.3 of the time value of the note.  This value can be set
+by the user, as in {\tt breath:0.3}.  
+
+\end{description}
+
+NOTE:  The method used to shape phrase endings is still rather crude.  Another 
+possibility to do this: (1)save current value of {\tt releaae}, 
+(2) emit {\tt release:shorter value} (3) emit note, (4) emit {\tt release: stored value}.
+
+
+
+\subsection{SF commands}
+
+A list of commands:
+
+{\bf Articulation}
+
+{\tt legato:}, {\tt marcato:} {\tt staccato:}, {\tt decay:arg}
+
+
+{\bf Pitch}
+
+{\tt o:arg} where (i) {\tt arg} is (i) {\tt +} repeated $n$ times.  This shifts
+the melody up by $n$ octaves; {\tt -} repeated $n$ times.  This shifts
+the melody down by $n$ octaves; {\tt +n} shifts up by $n$ octaves;
+{\tt -n} shifts down by $n$ octaves.  This command writes $\pm 12n$ the
+{\tt transpose} to register.
+
+{\tt t:arg} where  {\tt +n} shifts up by $n$ semitones;
+{\tt -n} shifts down by $n$ semitones.  This command writes $\pm n$ to the
+{\tt transpose} register.
+
+{\bf Tempo}
+
+
+{\tt tempo:144}
+
+{\tt prestissimo}. {\tt presto:}, {\tt allegro:}, {\tt moderato:}, {{\tt larghetto}, {\tt largo}, \tt grave:}, 
+{\tt lento:}
+
+{\tt allegro:+},  {\tt allegro:++}, {\tt allegro:-}, {\tt allegro:--} increases
+or decreases the tempo by a fixed factor. 
+
+{\tt tempo:+}, etc.  As above, but adjusts current tempo.  The sequence
+{\tt allegro: tempo:+} has the same effect as {\tt allegro:+}.
+
+{\tt accelerando:8:160}
+
+{\tt ralentando:8:120}
+
+{\bf Volume}
+
+Dynamics, long: {\tt fortissimo:}, {\tt forte:}, {\tt mezzoforte:}, 
+{\tt mezzopiano:}, {\tt piano:}, {\tt piannissimo:}.
+
+Dynamics, short: {\tt ff},  {\tt f}, {\tt mf}, {\tt mp}, {\tt p}, {\tt pp}.
+
+{\tt cresc:beats:level}, {\tt decresc:beats:level}. 
+
+
+\subsection{TU commands}
+
+{\tt @attack:0.01} Sets the attack phase of a note to 0.01 of the total duration of the note.
+
+{\tt @release:0.02} Sets the release phase of a note to 0.02 of the total duration of the note.
+
+{\tt @harmonics:1.0:0.4:0.2:0.1} Sets the strength of the overtones in a note. Here the fundamental
+has amplitude 1.0, the first overtone 0.4, etc.
+
+
+
+
+
+\section{To do}
+
+
+Big things
+
+\begin{enumerate}
+
+  \item A command line ear training program for prototyping purposes.
+
+  \item Multi-voice input.  Idea: label voices as voice:1 ... endVoice:1,
+  voice:2 ... endVoice:2, ...  .  Process each voice independently ... 
+  write files \_voice1.samp, \_voice2.samp, ... The interleave these to
+  produce a single file foo.samp.  Finally, convert this to a wave file.
+  Question:  does text2sf support more than two channels?
+  
+  \item MIDI keyboard input.
+
+  \item Build a player and integrate it into program
+  
+  
+\end{enumerate}
+
+Smaller things
+
+\begin{enumerate}
+
+\item {\tt cresc:8:forte}. etc.
+
+\item {\tt marcato}
+
+\item ralentando, accelerando
+
+\item {\tt temp+}, {\tt temp-}
+
+\item
+
+\end{enumerate}
+
+
+
+Business
+
+\begin{enumerate}
+  
+  \item Graphical user interface.  This would require a C or C++   SF engine
+  to replace the current Python code ... a big job!
+  
+  \item An iPad ear training program.
+  
+  \item An open source library  / website of melodies and other materials.
+  
+  \item Sell product to music schools.
+  
+
+
+
+\end{enumerate}
+
+
+
+
+
+
+\begin{thebibliography}{99}
+
+\bibitem{APB} The Audio Programming Book, Richard Boulanger and Victor Lazzarini, eds.
+
+\bibitem{tbolstad} Audio Programming on iOS -- http://timbolstad.com/about/
+
+\bibitem{portaudio} http://www.portaudio.com/trac/wiki/TutorialDir/Compile/MacintoshCoreAudio
+
+\bibitem{portaudio:2} http://www.portaudio.com/docs/v19-doxydocs/
+
+\bibitem{portaudio:3} http://www.portaudio.com/download.html
+
+\bibitem{portaudio:4} Portaudio tutorial: http://www.portaudio.com/trac/wiki/TutorialDir/TutorialStart
+
+\bibitem{portaudio:5} Building portaudio for mac: http://www.portaudio.com/trac/wiki/TutorialDir/Compile/MacintoshCoreAudio
+
+\bibitem{pyaudio} http://people.csail.mit.edu/hubert/pyaudio/
+
+\bibitem portaudio-bug: http://pujansrt.blogspot.com/2010/03/compiling-portaudio-on-snow-leopard-mac.html
+
+
+\end{thebibliography}
+
+James Carlson: jxxcarlson@mac.com, www.math.utah.edu/\~{}carlson \\
+Hakon Hallgrimur: hhallgrimur.wordpress.com
+
+\end{document}
+
+
+.  f
+In its simplest incarnation, the sound of each note is defined by an exponentially decaying
+sine wave
+\[
+   \phi_i(t) = A_i(t)e^{-t/\tau_i}\sin(\omega_i t + \theta_i)
+\]
+on an interval $J_i [t_{i-1}, t_{i}]$.  The phase term $\theta_i$ is such that the 
+sequence of functions $\phi_i$  on $J_i$ fit together to make a continuous function.
+Let $s_0, s_1, s_2, \ldots$ be an equally spaced set of times, with $s_0 = 0$ and with
+$s_{44100} = 1.0 \hbox{ sec}$.  These are the ``sample times.'' There are 44,100
+sample times in each one second interval.  Let $S$ be the sequence where
+\[
+   S_i = \phi(s_i).
+\]
+This sequence, $S_0, S_1, S_2, \ldots S_N$, where $N$ is 44,100 times the length of the audio in seconds,
+is the content of the sampled waveform constructed from the
+list of quadruples. 
