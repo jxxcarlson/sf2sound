@@ -1,0 +1,49 @@
+body {
+  margin-top:0.5cm;
+  margin-left:2em;
+}
+
+h1 {
+  font-size:18pt;
+}
+
+span.embed { 
+   margin-left:50px; 
+   margin-top:0px;
+   font-style:italic
+}
+
+p {
+  margin:0;
+}
+
+p.item {
+  margin-left:0;
+  margin-top:2em;
+  margin-bottom:0px;
+}
+
+p.item2 {
+  margin-left:55px;
+  margin-top:0px;
+  margin-bottom:0px;
+}
+
+
+   /* This CSS is used for the Show/Hide functionality. */
+   .more {
+      display: none;
+      /* border-top: 1px solid #666;
+      border-bottom: 1px solid #666; */
+   }
+   a.showLink, a.hideLink {
+      text-decoration: none;
+      color: #36f;
+      padding-left: 8px;
+      /* background: transparent url(down.gif) no-repeat left; */
+   }
+   a.hideLink {
+      /* background: transparent url(up.gif) no-repeat left; */
+   }
+   a.showLink:hover, a.hideLink:hover {
+      border-bottom: 1px dotted #36f; }

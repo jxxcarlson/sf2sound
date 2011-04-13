@@ -8,8 +8,9 @@ from scales import scale
 
 ############################
 # Location of text2sf and quad2samp in system:
-TEXT2SF = "~/Dropbox/bin/text2sf"
-QUAD2SAMP = "~/Dropbox/bin/quad2samp"
+TEXT2SF = "/Applications/sf2a/text2sf"
+QUAD2SAMP = "/Applications/sf2a/quad2samp"
+MIX= "/Applications/sf2a/mix"
 
 # recording level 1.0 creates obnoxious distortion
 maximumAmplitude = 0.0
@@ -179,7 +180,7 @@ def run(input, fileName, SCALE):
   if voiceProcessed > 1:
     print "Mixing ..."
     mixfile = "tmp-mix.samp"
-    cmd = catList(["mix"] + waveformFiles + [mixfile, "> tmp-val"]) 
+    cmd = catList([MIX] + [mixfile, "> tmp-val"]) 
     os.system(cmd)
     value = getChunk(file2string("tmp-val"), "<maximumAmplitude>", "</maximumAmplitude>")
     maximumAmplitude = float(value)

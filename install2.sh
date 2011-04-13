@@ -1,12 +1,23 @@
-INSTALL_DIR=~/Dropbox/bin/
+#  INSTALL_DIR=~/Dropbox/bin\
+INSTALL_DIR=/Applications/sf2a/
 
 case $1 in 
 
   -install)
+
+	if test -d $INSTALL_DIR
+	then
+	    echo $INSTALL_DIR exists ... proceeding
+	else
+	    echo $INSTALL_DIR not found ... creating it
+	    mkdir $INSTALL_DIR
+	fi
+
 	gcc quad2samp.c -o quad2samp
 	mv quad2samp $INSTALL_DIR
 	gcc mix.c -o mix
 	mv mix $INSTALL_DIR
+	cp text2sf $INSTALL_DIR
 
 	cp driver.py $INSTALL_DIR
 	cp sf2a.py $INSTALL_DIR 
@@ -27,7 +38,12 @@ case $1 in
 
 	cp listUtil.py $INSTALL_DIR
 	cp ui.py $INSTALL_DIR/sf2a 
-        cp dict.py $INSTALL_DIR/dict ;;
+
+        cp dict.py $INSTALL_DIR/dict
+        cp script $INSTALL_DIR
+	cp element5 $INSTALL_DIR
+	cp element6 $INSTALL_DIR 
+	cp style.css $INSTALL_DIR;;
 
   -test)
 	echo

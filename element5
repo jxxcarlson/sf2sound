@@ -1,0 +1,6 @@
+<p class="item2">                                                                    
+   <a href="#" id="example-show" class="showLink"                                    
+      onclick="showHide('example'); return false;">solfa</a>                         
+</p>                                                                                 
+<div id="example" class="more">                                                      
+   <p class="item2"> &nbsp;
