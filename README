@@ -19,7 +19,7 @@
   ----------------------
   Install sf2a by running the command
 
-       % sudo setup.sh -install
+       % sudo setup.sh YOUR_USER_NAME -install
 
   in the downloaded folder.
   Then run to test the installation
