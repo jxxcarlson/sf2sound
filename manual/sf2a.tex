@@ -16,12 +16,12 @@
 \usepackage{hyperref}
 
 
-\title{sf2sound\\
+\title{sf2a\\
 (D R A F T) \\}
 \author{James Carlson and Hakon Hallgrimur }
 
 \date{March 20, 2011.\\ 
- \emph{file = sf2sound.tex}} 
+ \emph{file = sf2a.tex}} 
  
                                            
 \newcommand{\mcaret}{$\hat{}$}
@@ -45,7 +45,7 @@
 
 % \abstract{foo, bar}{}
 \begin{abstract}
-We report on {\tt sf2sound}, a unix command-line program to create sound files from text such as
+We report on {\tt sf2a}, a unix command-line program to create sound files from text such as
 {\tt moderato:\ do re mi}.  SF, a mini-language for music input is introduce.  The program is based 
 on a modular engine that may find other uses.  Source code is available at http://.
 \end{abstract}
@@ -83,7 +83,7 @@ the current rhythm value to an eighth note, and {\tt h} changes it
 to a half note.  The command {\tt moderato:} sets the tempo.
 We could also have said {\tt tempo:144}. The symbols {\tt .} and {\tt |}
 are there only to make the text easier to read.  They are ignored
-by {\tt sf2sound}.  The symbol {\tt \ } is used  as with any unix command to
+by {\tt sf2a}.  The symbol {\tt \ } is used  as with any unix command to
 break up a long line.  The option {\tt -o foo} sets the name of the output
 file, which will be {\tt foo.wav}.
 
@@ -91,7 +91,7 @@ One can compose in more than one voice:
 \begin{verbatim}
     % sf2a -o foo 'decay:2.0 voice:1 do re do voice:2 sol fa mi'
 \end{verbatim}
-In its current implementation, {\tt sf2sound} can handle up to ten voices may.
+In its current implementation, {\tt sf2a} can handle up to ten voices may.
 For this many voices, command-line input is impractical.  Here is a monophonic
 example of input taken from a file:
 \begin{verbatim}
@@ -114,7 +114,7 @@ the commands like {\tt attack:0.01}.
 The symbol
  {\tt f:} stands for \emph{forte} and {\tt p:} for \emph{piano}.
 Likewise {\tt leg:} and {\tt stacc:} stand for \emph{legato} and \emph{staccato}.
-The symbols {\tt |} and {\tt .} have no meaning for {\tt sf2sound} and are ignored
+The symbols {\tt |} and {\tt .} have no meaning for {\tt sf2a} and are ignored
 by it.  They do, however, help us (humans) to parse, read, and write the text.  
 The bar-line symbol {\tt |} the period are used
 to separate whatever blocks of text the author would like to delineate.  A system
@@ -152,7 +152,7 @@ available commands.
 
 \section{The SF Language}
 
-It is apparent from the foregoing that the input to {\tt sf2sound}, be it 
+It is apparent from the foregoing that the input to {\tt sf2a}, be it 
 on the command line or in a file, is  expressed in a mini-language with its
 own vocabulary and grammar.  We have dubbed this language ``SF,'' for solfa.
 The language consists of (1) pitch symbols, (2) rhythm symbols, (3) commands.
@@ -195,7 +195,7 @@ For a full description of SF, see section \ref{sec:SFLR}.
 
 \section{The SF Pipeline}
 
-The program {\tt sf2sound} produces audio from text by applying a sequence of transformations, as pictured below. 
+The program {\tt sf2a} produces audio from text by applying a sequence of transformations, as pictured below. 
 
 \[
   \hbox{solfa} 
@@ -221,7 +221,7 @@ $a$ is its amplitude, and $\tau$ is the time constant for the decay of the note.
 The second machine, TU, accepts tuples as input and produces waveform data as 
 output. Waveform data is a sequence of numbers $s_0, s_1, s_2, \ldots, s_N$.
 Suppose that $\phi(t)$ is the ultimate acoustic pressure wave produced by playing 
-the sound file written by {\tt sf2sound ex1 'do re mi'}.  Then $s_i = \phi(t_i)$.
+the sound file written by {\tt sf2a ex1 'do re mi'}.  Then $s_i = \phi(t_i)$.
 Thus the $s_i$ are \emph{samples} of the actual wave form $\phi$. The \emph{sample times}
 $t_i$ are evenly spaced.  One generally takes $t_{i+1} - t_{i}$ = 1/44,100 seconds,
 about 20 microseconds.  Thus a waveform file (or sample file) contains 44,100 numbers
@@ -481,7 +481,58 @@ has amplitude 1.0, the first overtone 0.4, etc.
 
 
 
+\section{Manifest}
 
+The {\tt sf2a} program consists of a goodly number of parts.
+
+\begin{description}
+\parskip=1em
+
+\item[{\tt dict.py }] Calls {\tt sf2a} to create a web page of dictation exercise.
+
+\item[{\tt ui.py }] Defines the user interface and is the file executed to drive the entire package.
+Calls {\tt run(input, output, SCALE)} in {\tt driver.py}.
+
+\item[{\tt driver.py }] Coordinates the parts of the SF pipeline. Imports 
+{\tt SFM:SFM}, {\tt parse:getChunk}, {\tt comment:stripComments}, {\tt scales:scale}.
+The main function is {\tt run(input, output, SCALE)}, which calls {\tt quad2samp}, {\tt mix}, and {\tt text2sf}.s 
+
+\item[{\tt quad2samp.c }] Source file for {\tt quad2samp}.
+
+\item[{\tt quad2samp }] Takes a file of quadruples as input, produces a waveform sample file as output.
+
+\item[{\tt mix.c }] Source file for {\tt mix}.
+
+\item[{\tt mix }] Takes $N \le 10$ waveform sample files as input, produces waveform sample file as output which 
+represents the average of the input files.
+
+\item[{\tt text2sf}] Converts waveform sample file to {\tt .wav} file. XXX
+
+\item[{\tt SFM.py }] The SFM machine.  Imports {\tt parse:splitToken}, {\tt note:Note},
+{\tt rhythm:Rhythm}, {\tt dynamics:Dynamics}, {\tt stringUtil:*}, {\tt listUtil:interval, mapInterval}.
+
+
+\item[{\tt note.py }] foo, bar
+\item[{\tt scales.py }] foo, bar
+\item[{\tt rhythm.py }] foo, bar
+\item[{\tt dynamics.py }] foo, bar
+
+
+\item[{\tt parse.py }] foo, bar
+\item[{\tt comment.py }] foo, bar
+\item[{\tt stringUtil.py }] foo, bar
+
+
+\item[{\tt stack.py }] foo, bar
+\item[{\tt ring.py }] foo, bar
+\item[{\tt melody.py }] foo, bar
+
+
+\item[{\tt listUtil.py }] foo, bar
+
+
+
+ \end{description}
 
 \section{To do}
 
