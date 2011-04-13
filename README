@@ -19,7 +19,7 @@
   ----------------------
   Install sf2a by running the command
 
-       % sudo sh setup.sh YOUR_USER_NAME -install
+       % sudo sh setup.sh -install carlson
 
   in the downloaded folder.
   Then run to test the installation
