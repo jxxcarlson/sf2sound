@@ -4,7 +4,7 @@ import os
 from optparse import OptionParser
 from driver import run
 from stringUtil import file2string, string2file
-from parse import getItem, getItems
+from parse import getItem, getItems, xml2html
 
 desc="""dict is a python program for building music dictation lessons.
 """
@@ -75,7 +75,8 @@ def render():
 def webpage():
   dictation = file2string(filename)
   items = getItems(dictation, "ex")
-
+  info = getItem(dictation, "dictation")
+  
   n = 0
 
   text = '<html>\n<head>\n<link rel="stylesheet" type="text/css"  media="screen" href="style.css">\n'
@@ -83,11 +84,13 @@ def webpage():
   text += file2string("script")
 
   text += '\n<head>\n\n<body>\n\n'
+  text += '<h1>Dictation</h1>\n'
+  text += xml2html(info) + "\n\n"
 
   element1 = '<p class="item">'
   element2 = ': '
   element3 = '<span class="embed"><embed src="'
-  element4 = '" width=300 height=15px autostart=false repeat=false loop=false"> <embed></span>\n</p>\n\n'
+  element4 = '" width=300 align=bottom height=15px autostart=false repeat=false loop=false"> <embed></span>\n</p>\n\n'
 
   element5 = file2string("element5")
 

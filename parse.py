@@ -1,5 +1,47 @@
 import string
 
+def gettag(source):
+  a = source.find("</")
+  if a == -1:
+    return "", -1, -1
+  else:
+    b = source[a:].find(">") + a
+    a = a + 2
+    tag = source[a:b]
+    return tag, a, b
+
+def gettags(source):
+  tags = [ ]
+  scanning = True
+  k = 0
+  while scanning == True:
+    tag = gettag(source[k:])
+    T = tag[0]
+    if T != "":
+      if T not in tags:
+        tags.append(T)
+      k += tag[2]+1
+    else:
+      scanning = False
+  return tags
+
+def xml2items(source):
+  tags = gettags(source)
+  item = { }
+  for tag in tags:
+    item[tag] = getItem(source, tag)
+  return item
+  
+def xml2html(source):
+  output = ""
+  D = xml2items(source)
+  for k in D.keys():
+    output += "<p><strong>"+k.capitalize()	+":</strong>"+" "+D[k]+"</p>\n"
+  return output
+    
+  
+    
+
 
 def indexOfAlphaPrefix(token):
 

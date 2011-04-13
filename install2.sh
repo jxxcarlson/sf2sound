@@ -31,20 +31,24 @@ case $1 in
 
   -test)
 	echo
-        python sheco.py "sf2sound '@harmonics:1.0:0.5:0.25:0.125:0.06 tempo:120 octave:1 q do e re mi q fa sol h la sol' output";;
+        python sheco.py "sf2a '@harmonics:1.0:0.5:0.25:0.125:0.06 tempo:120 octave:1 q do e re mi q fa sol h la sol' output";;
 
   -x)
 	echo
-        python sheco.py "sf2sound 'tempo:20 decay:2.0 octave:3 @harmonics:1.0:0.5:0.3 q do sol' output";;
+        python sheco.py "sf2a 'tempo:20 decay:2.0 octave:3 @harmonics:1.0:0.5:0.3 q do sol' output";;
 
   -test2)
 	echo
-        python sheco.py "sf2sound '@foo:81 voice:1 @bar:27 tempo:60 decay:2.0 octave:1 h mi re voice:2 tempo:60 decay:2.0 octave:0 h do sol' output2";;
+        python sheco.py "sf2a '@foo:81 voice:1 @bar:27 tempo:60 decay:2.0 octave:1 h mi re voice:2 tempo:60 decay:2.0 octave:0 h do sol' output2";;
 
   -test3)
 	echo
-        python sheco.py "sf2sound 'voice:1 @harmonics:1.0:0.5 tempo:60 decay:2.0 octave:2 h mi re voice:2 @harmonics:1.0:0.5 tempo:60 decay:2.0 octave:1 h do sol' output2";;
+        python sheco.py "sf2a 'voice:1 @harmonics:1.0:0.5 tempo:60 decay:2.0 octave:2 h mi re voice:2 @harmonics:1.0:0.5 tempo:60 decay:2.0 octave:1 h do sol' output2";;
   
+  -test4)
+	echo
+	python sheco.py "sf2a 'octave:0 do mi sol octave:1 do mi sol octave:2 do mi sol octave:3 do mi sol octave:4 do mi sol octave:5 do mi sol octave:6 do mi sol do^'";;
+
    *) echo "   Try one of these: sh $0 -install or sh $0 -test";;
 
 esac

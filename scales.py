@@ -6,7 +6,7 @@ wholetone = semitone*semitone
 NOTES = ["do", "re", "mi", "fa", "sol", "la", "ti"]
 
 FREQ = { }
-FREQ["do"] = 256/4.0
+FREQ["do"] = 256/8.0
 FREQ["re"] = wholetone*FREQ["do"]
 FREQ["mi"] = wholetone*FREQ["re"]
 FREQ["fa"] = semitone*FREQ["mi"]
@@ -21,7 +21,7 @@ scale["diatonic"] = NOTES, FREQ
 NOTES = ["do", "di", "re", "ri", "mi", "fa", "fi", "sol", "si", "la", "li", "ti"]
 
 FREQ = { }
-FREQ["do"] = 256/4.0
+FREQ["do"] = 256/8.0
 FREQ["di"] = semitone*FREQ["do"]
 FREQ["re"] = semitone*FREQ["di"]
 FREQ["ri"] = semitone*FREQ["re"]
