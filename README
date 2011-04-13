@@ -19,14 +19,26 @@
   ----------------------
   Install sf2a by running the command
 
-       % sudo sh setup.sh -install carlson
+       % sudo sh setup.sh -install YOUR_USER_NAME
 
   in the downloaded folder.
-  Then run to test the installation
+  Then run this to test the installation
 
        sf2a 'do re mi'
 
   The audio file produced is out.wav
+
+  DICTATION
+  --------
+  Copy the file dictation.txt from the install folder to some folder.
+  Go to that folder.  Run the command 
+
+      % dict -m
+
+  The file dictation.txt will be processed into web page
+  that has five musical dictation exercises.   Still
+  some work to do here.  Type dict -h for help.
+  
 
   MANUAL
   -----
