@@ -1,103 +1,43 @@
-NOTE: we have renamed sf2sound to be sf2a.
 
-sf2a  is a unix command-line program 
-for creating sound files from text such as
+  =================================================================
+  SF2A README: 4/13/2011
+  =================================================================
+
+  DESCRIPTION
+  -----------
+  sf2a  is a unix command-line program 
+  for creating sound files from text such as
  
-     moderato: do re mi.
+       moderato: do re mi.
 
-After installing the package using 
-
-     install2.sh -install
-
-run
-
-     sf2a 'do re mi'
-
-Then listen to the audio file out.wav
-
-We have started a manual. See sf2a.tex
-or go to 
-
-     http://www.math.utah.edu/~carlson/audio/sf2a.pdf
+   - We have renamed sf2sound to be sf2a.
+   - The installer (for Macs) is now "sudo sh setup.sh -install"
+   - All files are installed in /Applications/sf2a/
 
 
-This is a collabarative project:
+  INSTALLATION & TESTING
+  ----------------------
+  Install sf2a by running the command
 
-  James Carlson, Hakon Hallgrimur
+       % sudo setup.sh -install
 
--------------
-NOTE:  We have posted a new version of sf2sound
-which has a much more modular structure.  It is
-not quite up to date with the previous version.
+  in the downloaded folder.
+  Then run to test the installation
 
-To install version 1, use sh install1.sh.
-To install version 2, use 
+       sf2a 'do re mi'
 
-  sh install2.sh -install
+  The audio file produced is out.wav
 
-For tests and examples of version 2, use
+  MANUAL
+  -----
+  We have started a manual. See sf2a.tex
+  or go to 
 
-  sh install2.sh -test
-  sh install2.sh -test2
+       http://www.math.utah.edu/~carlson/audio/sf2a.pdf
+  
+  for the pdf file
 
-The files required for version 2 are
-listed below.  The file ui.py
-is the "main" file.
 
-   driver.py
-   sf2a.py
-   SFM.py
-   note.py
-   scales.py
-   rhythm.py
-   dynamics.py
-   parse.py
-   comment.py
-   stringUtil.py
-   stack.py
-   ring.py
-   melody.py
-   listUtil.py
-   ui.py
-   dict.py
+  -- James Carlson, Hakon Hallgrimur
 
-  --------------
-Example 1. (input from command line)
-
-	% /.sf2a '|| q do re . e mi re do re | mi x fa x h sol ||' 
-	% play out.wav
-
-Here "play" is any program capable of playing .wav files.
-
-Example 2: As above, except that the contents of the file are read from disk.
-
-        % /.sf2a -f theme.txt 	 
-        % play theme.wav
-
-For theme.txt -- see this github: http://gitub.com/jxxcarlson/sf2sound/  .
-
-The sound file theme.wav for various versions of sf2sound
-can be found at http://hhallgrimur.wordpress.com/code/
-
----------------------
-
-Parts that are compiled with C
-
-        1. mix.c
-        2. quad2samp.c
-        3. text2sf
-
-Parts 1 and 2 are in this repository.  Part 3 comes 
-with "The Audio Programming Book" by Boulanger
-and Lazzarini.  Later, I will try to find a 
-source for it on the internet.
-
-For sf2sound to have access to parts 2 and 3, two
-variables in sf2sound.py must be set --
-TEXT2SF and  QUAD2SAMP, e.g.,
-
-         # Location of text2sf and quad2samp in system:
-         TEXT2SF = "~/Dropbox/bin/text2sf"
-         QUAD2SAMP = "~/Dropbox/bin/quad2samp"
-
-Search the text of sf2sound.py for these.
+  =================================================================
