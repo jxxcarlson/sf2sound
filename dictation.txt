@@ -1,0 +1,51 @@
+<dictation>
+<lesson>1</lesson>
+<title>Basic solfa patterns</title>
+<source>Bradley, p. 2</source>
+<date>5/6/2011</date>
+</dictation>
+
+<settings>
+
+<voice>
+octave:3
+legato:
+harmonics:1.0:0.5:0.25
+</voice>
+
+</settings>
+
+<ex>
+<index>1</index>
+<content>
+voice:1 do re ti_ do, fa mi do re do, sol la sol do, ti_ re do
+</content>
+</ex>
+
+<ex>
+<index>2</index>
+<content>
+voice:1 do mi re do, sol re ti_ do, fa mi sol do, ti_ sol re do
+</content>
+</ex>
+
+<ex>
+<index>3</index>
+<content>
+voice:1 do ti_ la_ do re do, sol la fa sol do
+</content>
+</ex>
+
+<ex>
+<index>4</index>
+<content>
+voice:1 do sol ti do, la sol ti do, fa mi re ti_ do, ti sol do
+</content>
+</ex>
+
+<ex>
+<index>5</index>
+<content>
+voice:1 do fa sol do fa la sol ti do, sol ti re fa mi do
+</content>
+</ex>
