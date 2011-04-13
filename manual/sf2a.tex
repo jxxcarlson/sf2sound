@@ -16,8 +16,8 @@
 \usepackage{hyperref}
 
 
-\title{sf2a\\
-(D R A F T) \\}
+\title{sf2a: from solfege to audio\\
+(under construction) \\}
 \author{James Carlson and Hakon Hallgrimur }
 
 \date{March 20, 2011.\\ 
@@ -47,7 +47,8 @@
 \begin{abstract}
 We report on {\tt sf2a}, a unix command-line program to create sound files from text such as
 {\tt moderato:\ do re mi}.  SF, a mini-language for music input is introduce.  The program is based 
-on a modular engine that may find other uses.  Source code is available at http://.
+on a modular engine that may find other uses.  Source code is available at 
+http://github.com/jxxcarlson/sf2sound .
 \end{abstract}
 
 
@@ -150,7 +151,9 @@ None of the commands discussed are mandatory.  If they are omitted, the variable
 control take their default values.  See section \ref{sec:SFLR} for a full discussion of the
 available commands.
 
-\section{The SF Language}
+\section{Structure}
+
+\subsection{The SF Language}
 
 It is apparent from the foregoing that the input to {\tt sf2a}, be it 
 on the command line or in a file, is  expressed in a mini-language with its
@@ -193,7 +196,7 @@ For a full description of SF, see section \ref{sec:SFLR}.
 
 
 
-\section{The SF Pipeline}
+\subsection{The SF Pipeline}
 
 The program {\tt sf2a} produces audio from text by applying a sequence of transformations, as pictured below. 
 
@@ -306,7 +309,7 @@ The Python program {\tt solfa2sound} plumbs the output of one stage of the pipel
 
 
 
-\section{The SF Machine}
+\subsection{The SF Machine}
 
 The SF machine accepts one token of the SF language at time. It operates as follows:
 
@@ -331,7 +334,7 @@ The SF machine accepts one token of the SF language at time. It operates as foll
 The registers of the SF machine are as follows. // NEEDS UPDATE
 
 \begin{description}
-
+    \parskip=1em
 	\item[{\tt frequency}] Set by the input token if it is a note.
 	
 	\item[{\tt duration}]  Holds the current duration in seconds.  Set by the input token if it
@@ -357,14 +360,14 @@ The registers of the SF machine are as follows. // NEEDS UPDATE
 
 
 
-\section{The TU Machine}
+\subsection{The TU Machine}
 
 The TU machine transforms a stream of tuples to a waveform represented as
 a sequence of samples.  It also accepts certain commands which affect the 
 synthesis of the waveform.
 
 \begin{description}
-
+  \parskip=1em
   \item[{\tt @harmonic:a:b:c:...}] -- sets the amplitudes of the fundamental tone
    to {\tt a}, of the first overtone to {\tt b}, etc.
    
@@ -387,6 +390,7 @@ flatted and sharped versions, {\tt de ra me se le te} and
 {\tt di ri fi si li}.  The pitch accents are
 
 \begin{description}
+\parskip=1em
 
 \item[{\tt +}]  Raises pitch by a semitone, as in {\tt fa+}. Multiple
 values, e.g., {\tt fa++} are permitted.
