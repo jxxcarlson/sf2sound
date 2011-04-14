@@ -1,4 +1,8 @@
+#! /usr/bin/env python
+
 import os, sys
+from optparse import OptionParser
+
 
 talk = { }
 
@@ -60,20 +64,73 @@ def string2file(s,f):
   FF = open(F,'w')
   FF.write(s)
   FF.close()
-  
-input = file2string(sys.argv[1])
-input = input.lower()
-output = "fundamental:120 decay:0.10 @attack:0.005 presto: f: \n "
 
-n = len(input)
-for i in range(0,n):
-  c = input[i]
-  if c in talk.keys():
-    output += talk[c]+" "
-    if i < n-1:
-      if c != ' ' and input[i+1] == ' ': # interword space
-        output += "p: t sol_  re_  do_ f: \n"
 
-output +="\n"  
+def text2sf(input, tempo):
+  input = input.lower()
+  output = "fundamental:120 decay:0.10 @attack:0.005 " + tempo + " f: \n "
+
+  n = len(input)
+  for i in range(0,n):
+    c = input[i]
+    if c in talk.keys():
+      output += talk[c]+" "
+      if i < n-1:
+        if c != ' ' and input[i+1] == ' ': # interword space
+          output += "p: e re la_ re f: \n"
+
+  output +="\n"  
+  return output
   
-string2file(output, sys.argv[2])
+def run(input, output, tempo):
+  solfa = text2sf(input, tempo)
+  string2file(solfa, "talk1010-sf.tmp")
+  cmd = 'sf2a -f talk1010-sf.tmp -o ' + output_file 
+  os.system(cmd)
+  cmd = 'rm talk1010-sf.tmp'
+  # os.system(cmd)
+  if options.play:
+    cmd = 'play ' + output_file + '.wav'
+    os.system(cmd)
+
+
+#########################################
+
+desc="""mttalk is a program for converting test into music,
+somewhat like the talking drummers of Africa.  See
+  
+   http://hhallgrimur.wordpress.com/2011/03/22/talking-drums/
+
+Example:
+
+   % mtalk 'I would like three apples.  Oh, and four pears too!' -p -t allego
+
+For more information, consult talk -h
+"""
+
+parser = OptionParser(description=desc)
+
+
+parser.add_option("-f", "--file", action="store", type="string", dest="filename")
+parser.add_option("-o", "--output", action="store", type="string", dest="output")
+parser.add_option("-t", "--tempo", action="store", type="string", dest="tempo")
+parser.add_option("-p", "--play", action="store_true", dest="play")
+
+(options, args) = parser.parse_args()
+
+if options.filename:
+  input = file2string(options.filename)
+else:
+  input = args[0]
+
+if options.output:
+  output_file = otions.output
+else:
+  output_file = "out"
+
+if options.tempo:
+  tempo = options.tempo+":"
+else:
+  tempo = "moderato:"
+
+run(input, output_file, tempo)

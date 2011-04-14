@@ -151,6 +151,91 @@ None of the commands discussed are mandatory.  If they are omitted, the variable
 control take their default values.  See section \ref{sec:SFLR} for a full discussion of the
 available commands.
 
+\section{Examples}
+
+\subsection{Producing an audio file}
+
+Use {\tt sf2a 'do re mi'} to produce a {\tt .wav} file, {\tt out.wav}
+representing this melody.
+
+\subsection{Dictation}
+
+Use the command {\tt dict -m} to make a diction exercise --- audio files
+and web page --- form the file which specifies it: the \emph{dictation file}.
+
+Below is a dictation file with file name {\tt dictation.txt}.  It defines
+three dictation exercises in xml format.  Note the header, defined by the 
+{\tt lesson} tag.  The next section, delimited by the {\tt setings} tag,
+determines parameters to be used in each dictation exercise.  In this
+example there is only one voice ... XXXX.  An exercise is delimited by the 
+{\tt ex} tag.
+
+\begin{verbatim}
+   <dictation>
+   
+   <lesson>1</lesson>
+   <title>Basic solfa patterns</title>
+   <source>Bradley, p. 2</source>
+   <date>5/6/2011</date>
+   </dictation>
+   
+   <settings>
+   
+   <voice>
+   octave:3
+   legato:
+   harmonics:1.0:0.5:0.25
+   </voice>
+   
+   </settings>
+   
+   <ex>
+   <index>1</index>
+   <content>
+   voice:1 do re ti_ do, fa mi do re do, sol la sol do, ti_ re do
+   </content>
+   </ex>
+   
+   <ex>
+   <index>2</index>
+   <content>
+   voice:1 do mi re do, sol re ti_ do, fa mi sol do, ti_ sol re do
+   </content>
+   </ex>
+   
+   </dictation>
+\end{verbatim}
+
+\subsubsection{Command options}
+
+\begin{description}
+
+  \item[{\tt -h, --help}] Show help.
+  
+  \item[{\tt -r, --render}] Create the audio files specified by the 
+  dictation  file.
+  
+  \item[{\tt -w, --webpage}] Create the web page specified by the 
+  dictation file.
+  
+  \item[{\tt -m, --make}] Render audio files and make web page.
+  
+  
+  \item[{\tt -i, --input}] Takes an arguemnt, the input file name.
+  If the {\tt -i} option is not used, {\tt dictation.txt} is assumed.
+  
+  \item[{\tt -o, --output}] Set the ouput file name.  the default, 
+  used if {\tt -o} is not specified, is {\tt index.html}.
+  
+  \item[{\tt -c, --catalogue}] diplay catalogue of exercises specified by
+  dictation file.
+  
+  \item[{\tt -v, --verbose}] Verbose output.  Applies to {\tt -c}.
+  
+   \item[{\tt -p N, --play N}] Play exercise $N$.
+
+\end{description}
+
 \section{Structure}
 
 \subsection{The SF Language}

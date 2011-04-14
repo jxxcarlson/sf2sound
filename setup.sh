@@ -36,7 +36,7 @@ case $1 in
         cp melody.py $INSTALL_DIR/
 
 	cp listUtil.py $INSTALL_DIR/
-	cp ui.py $INSTALL_DIR/sf2a 
+ 	cp ui.py $INSTALL_DIR/sf2a 
 
         cp dict.py $INSTALL_DIR/dict
         cp script $INSTALL_DIR/
@@ -44,11 +44,14 @@ case $1 in
 	cp element6 $INSTALL_DIR/ 
 	cp style.css $INSTALL_DIR/
         cp dictation.txt $INSTALL_DIR/
+        cp talk.py $INSTALL_DIR/mtalk.py
 
 	ln -s $INSTALL_DIR/sf2a $BIN_DIR/sf2a
 	ln -s $INSTALL_DIR/dict $BIN_DIR/dict
+        ln -s $INSTALL_DIR/talk.py $BIN_DIR/mtalk
 
-        chmod u+x $INSTALL_DIR/dict $INSTALL_DIR/sf2a  
+        chmod u+x $INSTALL_DIR/dict $INSTALL_DIR/sf2a  $INSTALL_DIR/mtalk.py
+        chmod u+x $BIN_DIR/dict $BIN_DIR/sf2a  $BIN_DIR/mtalk       
         chown $2 $INSTALL_DIR/* ;;
 
   -test)
