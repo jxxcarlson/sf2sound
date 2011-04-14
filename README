@@ -39,6 +39,16 @@
   that has five musical dictation exercises.   Still
   some work to do here.  Type dict -h for help.
   
+  MTALK
+  ------
+  mtalk is a text-to music program.  Example:
+
+     % mtalk 'One bag of apples.  Oh, and four pears please' -p
+
+  This command transforms the text into solfege, then into a sound
+  file, out.wav.  The option "-p" causes out.wav to be played, assuming
+  that you have installed a command "play" which works when you 
+  type "play foo.wav".
 
   MANUAL
   -----
