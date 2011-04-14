@@ -1,4 +1,3 @@
-#  INSTALL_DIR=~/Dropbox/bin\
 INSTALL_DIR=/Applications/sf2a
 BIN_DIR=~/Dropbox/bin
 
@@ -21,7 +20,6 @@ case $1 in
 	cp text2sf $INSTALL_DIR/
 
 	cp driver.py $INSTALL_DIR/
-	cp sf2a.py $INSTALL_DIR/ 
 	cp SFM.py $INSTALL_DIR/
 
 	cp note.py $INSTALL_DIR/
