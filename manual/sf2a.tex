@@ -172,11 +172,31 @@ The you can do this:
 \end{verbatim}
 We will assume the existence of such a command.
 
-\subsection{Producing an audio file}
+\subsection{Producing an audio file with {\tt sf2a}}
 
 Use {\tt sf2a 'do re mi'} to produce a {\tt .wav} file, {\tt out.wav}
 representing this melody.
 
+
+  -h, --help            show this help message and exit
+  -f FILENAME, --file=FILENAME
+  -o OUTPUT, --output=OUTPUT
+  -s SCALE, --scale=SCALE
+
+
+\begin{description}
+
+\item[ -h, --help] Display help.
+
+\item[ -f, --filename] Take input from file: {\tt sf2a -h mymelody}/
+
+\item[o, --output] As in {\tt sf2a 'do re mi' -o foo}, write
+output to {\tt foo.wav}.
+
+\item[-s, -scale] As in {\tt sf2a 'do re mi' --scale diatonic}
+or {\tt sf2a 'do re mi' --scale chromatic}, select scale. Default is XXXX.
+
+\end{description}
 \subsection{mtalk}
 
 The {\tt mtalk} program converts text into an audio file by converting
