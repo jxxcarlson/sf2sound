@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+import os
+
 from optparse import OptionParser
 from driver import run
 from stringUtil import file2string
@@ -35,3 +37,4 @@ run(input, output, SCALE)
 
 if options.play:
   cmd = "play " + output + ".wav"
+  os.system(cmd)
