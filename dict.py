@@ -53,7 +53,7 @@ else:
 if options.output:
   outputFile = options.output
 else:
-  outputFiel = "index.html"
+  outputFile = "index.html"
 
 def render():
   dictation = file2string(filename)
