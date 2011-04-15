@@ -153,10 +153,39 @@ available commands.
 
 \section{Examples}
 
+The installation of {\tt sf2a} brings with it several other programs: {\tt mtalk} and
+{\tt dict}.  These are desibed below.
+
+\subsection{Playing an audio file}
+
+It is convenient to have a command line program to play audio files.
+If one is not available, one can do something like this (mac):
+\begin{verbatim}
+   #!/bin/sh
+
+   open -a /Applications/QuickTime\ Player.app/ $1
+\end{verbatim}
+Name the above file {\tt play} and put in somewhere in the executable path.
+The you can do this:
+\begin{verbatim}
+  % play foo.wav
+\end{verbatim}
+We will assume the existence of such a command.
+
 \subsection{Producing an audio file}
 
 Use {\tt sf2a 'do re mi'} to produce a {\tt .wav} file, {\tt out.wav}
 representing this melody.
+
+\subsection{mtalk}
+
+The {\tt mtalk} program converts text into an audio file by converting
+it first to solfege, then running {\tt sf2a} on it.  Here is an example:
+\begin{verbatim}
+   % mtalk 'I would like three apples.  Oh, and four pears too!' -p -t allego
+\end{verbatim}
+Use {\tt mtalk -h} for more information.
+
 
 \subsection{Dictation}
 
@@ -570,7 +599,26 @@ has amplitude 1.0, the first overtone 0.4, etc.
 
 
 
-\section{Manifest}
+\section{Installation}
+
+
+\subsection{Download and install}
+
+Download the complete installation from 
+\begin{verbatim}
+   http://github.com/jxxcarlson/sf2sound
+\end{verbatim}
+Unzip/untar the download, cd to the folder that has been extracted, and 
+run the command
+\begin{verbatim}
+  % sudo sh setup.sh -install YOUR_USER_NAME
+\end{verbatim}
+You might have to configure the variables {\tt \$INSTALL\_DIR} and
+{\tt \$BIN\_DIR}. The first is where all the files go. The second
+is where you put a symbolic link to {\tt ui.py}, {\tt dict.py}, 
+and {\tt mtalk.py}. 
+
+\subsection{Parts list}
 
 The {\tt sf2a} program consists of a goodly number of parts.
 
@@ -580,7 +628,7 @@ The {\tt sf2a} program consists of a goodly number of parts.
 \item[{\tt dict.py }] Calls {\tt sf2a} to create a web page of dictation exercise.
 
 \item[{\tt ui.py }] Defines the user interface and is the file executed to drive the entire package.
-Calls {\tt run(input, output, SCALE)} in {\tt driver.py}.
+Calls {\tt run(input, output, SCALE)} in {\tt driver.py}
 
 \item[{\tt driver.py }] Coordinates the parts of the SF pipeline. Imports 
 {\tt SFM:SFM}, {\tt parse:getChunk}, {\tt comment:stripComments}, {\tt scales:scale}.
