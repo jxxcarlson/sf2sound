@@ -1,0 +1,17 @@
+#!/bin/sh
+
+USER=carlson
+INSTALL_DIR=/usr/local/bin
+BIN_DIR=~/Dropbox/bin
+
+
+if test -d $INSTALL_DIR
+then
+   echo $INSTALL_DIR exists ... proceeding
+else
+   echo $INSTALL_DIR not found ... creating it
+   mkdir $INSTALL_DIR
+   chown $USER $INSTALL_DIR*/
+fi
+
+   chown $USER $INSTALL_DIR/*
